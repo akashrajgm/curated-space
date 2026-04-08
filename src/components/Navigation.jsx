@@ -15,7 +15,7 @@ export default function Navigation() {
       <Magnetic><NavLink to="/spaces" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Inspiration</NavLink></Magnetic>
       <Magnetic><NavLink to="/journal" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Blog</NavLink></Magnetic>
 
-      {user && String(user.role).toLowerCase() === 'vendor' && (
+      {user && String(user?.role).toLowerCase() === 'vendor' && (
         <Magnetic><NavLink to="/vendor/dashboard" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"} style={{ color: 'var(--color-primary)', fontWeight: 600 }}>Seller Dashboard</NavLink></Magnetic>
       )}
     </nav>

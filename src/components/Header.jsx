@@ -69,7 +69,7 @@ export default function Header() {
             />
           </motion.div>
 
-          {(!user || (user && user.role && user.role.toLowerCase() !== 'vendor')) && (
+          {(!user || (user && user?.role && user?.role.toLowerCase() !== 'vendor')) && (
             <Magnetic>
               <Link to="/cart" className="nav-link" style={{ fontWeight: '600' }}>
                 Bag {cartCount > 0 && `(${cartCount})`}
@@ -180,7 +180,7 @@ export default function Header() {
                  {/* Design Services link hidden on mobile as per Step 109 */}
                  <Link to="/spaces" className="nav-link" onClick={closeMenus}>Inspiration</Link>
                  <Link to="/journal" className="nav-link" onClick={closeMenus}>Blog</Link>
-                 {user && String(user.role).toLowerCase() === 'vendor' && <Link to="/vendor/dashboard" className="nav-link" onClick={closeMenus} style={{ color: 'var(--color-primary)', fontWeight: 600 }}>Seller Dashboard</Link>}
+                 {user && String(user?.role).toLowerCase() === 'vendor' && <Link to="/vendor/dashboard" className="nav-link" onClick={closeMenus} style={{ color: 'var(--color-primary)', fontWeight: 600 }}>Seller Dashboard</Link>}
                </div>
                
                <div style={{ height: '1px', background: 'var(--color-surface-variant)' }}></div>

@@ -47,7 +47,9 @@ export default function Storefront() {
         console.log('📦 TOTAL PRODUCTS FROM API:', data?.length ?? 0, '| Rendering:', mappedData.length, mappedData);
         setProducts(mappedData);
       } catch (err) {
-        setProducts(mockProducts);
+        console.error('Fetch products failed:', err);
+        setProducts(mockProducts || []);
+        setIsLoading(false);
       } finally {
         setIsLoading(false);
       }
@@ -77,13 +79,13 @@ export default function Storefront() {
     }
   };
 
-  const filteredProducts = products.filter(p => {
+  const filteredProducts = (products || []).filter(p => {
     // Fuzzy Category Matching: bypass entirely on 'All', strip pluralization for tight matches
     const passedCategory = activeCategory === 'All' || 
-                           (p.category && p.category.toLowerCase().includes(activeCategory.toLowerCase().replace(/s$/, '')));
+                           (p?.category && p?.category?.toLowerCase().includes((activeCategory || '').toLowerCase().replace(/s$/, '')));
     const query = (searchQuery || '').toLowerCase();
-    const passedSearch = (p.title || '').toLowerCase().includes(query) || 
-                         (p.description || '').toLowerCase().includes(query);
+    const passedSearch = (p?.title || '').toLowerCase().includes(query) || 
+                         (p?.description || '').toLowerCase().includes(query);
     return passedCategory && passedSearch;
   });
 
@@ -92,6 +94,8 @@ export default function Storefront() {
     addToCart(product);
     showToast(`${product.title} added to your cart.`);
   };
+
+  if (!products) return null;
 
   return (
     <motion.div className="storefront-page" variants={pageVariants} initial="initial" animate="animate" exit="exit">
@@ -146,10 +150,11 @@ export default function Storefront() {
                     {/* Image + Heart overlay wrapper */}
                     <div style={{ position: 'relative', overflow: 'hidden', borderRadius: 'var(--radius-lg)' }}>
                       <ArchitecturalImage
-                        src={product.image}
-                        alt={product.title}
+                        src={product?.image}
+                        alt={product?.title || 'Product'}
                         className="product-image-container"
                         style={{ background: 'transparent' }}
+                        priority={i < 4}
                       />
                       <button
                         onClick={(e) => { e.stopPropagation(); toggleWishlist(product); }}
@@ -189,10 +194,10 @@ export default function Storefront() {
                       </button>
                     </div>
 
-                    <h3>{product.title}</h3>
-                    <p>{product.description}</p>
+                    <h3>{product?.title || 'Unknown Product'}</h3>
+                    <p>{product?.description || 'No description available'}</p>
                     <div className="product-price-row">
-                      <span className="price">{formatCurrency(product.price)}</span>
+                      <span className="price">{formatCurrency(product?.price || 0)}</span>
                       {existingItem ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                           <button

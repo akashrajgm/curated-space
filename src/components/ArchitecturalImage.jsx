@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 
-export default function ArchitecturalImage({ src, alt, className, style }) {
+export default function ArchitecturalImage({ src, alt, className, style, priority = false }) {
   const [isLoaded, setIsLoaded] = useState(false);
 
   const FALLBACK = 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&q=80&w=800';
 
-  let lowResSrc = src;
-  let highResSrc = src;
+  let lowResSrc = src || FALLBACK;
+  let highResSrc = src || FALLBACK;
 
-  if (src && src.includes('unsplash.com')) {
+  if (src && typeof src === 'string' && src.includes('unsplash.com')) {
     const baseUrl = src.split('?')[0];
     lowResSrc = `${baseUrl}?auto=format&fit=crop&q=10&w=50&blur=100`;
     highResSrc = `${baseUrl}?auto=format&fit=crop&q=80&w=800`;
@@ -22,7 +22,7 @@ export default function ArchitecturalImage({ src, alt, className, style }) {
          src={lowResSrc}
          alt=""
          aria-hidden="true"
-         loading="lazy"
+         loading={priority ? "eager" : "lazy"}
          style={{
            width: '100%', height: '100%', objectFit: 'cover',
            filter: 'blur(20px)',
@@ -34,9 +34,9 @@ export default function ArchitecturalImage({ src, alt, className, style }) {
 
        {/* High-res image with direct onError fallback — no state flicker */}
        <motion.img
-          loading="lazy"
+          loading={priority ? "eager" : "lazy"}
           src={highResSrc}
-          alt={alt}
+          alt={alt || "Product image"}
           onLoad={() => setIsLoaded(true)}
           onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK; setIsLoaded(true); }}
           initial={{ opacity: 0 }}

@@ -37,9 +37,9 @@ export default function VendorCatalog() {
       <h2 className="page-title">My Products</h2>
       <div className="product-grid" style={{ display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
         {products.map(prod => (
-          <div key={prod.id} className="product-card" style={{ border: '1px solid var(--color-outline-variant)', borderRadius: 'var(--radius-lg)', padding: '1rem' }}>
-            <p><strong>{prod.title || prod.name}</strong></p>
-            <p>Price: {prod.price ? `$${prod.price}` : 'N/A'}</p>
+          <div key={prod?.id} className="product-card" style={{ border: '1px solid var(--color-outline-variant)', borderRadius: 'var(--radius-lg)', padding: '1rem' }}>
+            <p><strong>{prod?.title || prod?.name || 'Untitled'}</strong></p>
+            <p>Price: {prod?.price ? `$${prod?.price}` : 'N/A'}</p>
           </div>
         ))}
       </div>

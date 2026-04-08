@@ -1,9 +1,9 @@
 // ─── Proxy Bridge Protocol ────────────────────────────────────────────────────
 // In dev: /api/* → Vite proxy → https://interior-marketplace-api.onrender.com/*
 // In prod: direct to the Render URL (no proxy available)
-const isDev = typeof import.meta !== 'undefined' && import.meta.env?.DEV;
-export const API_BASE_URL = isDev ? '/api' : 'https://interior-marketplace-api.onrender.com';
+const isDev = typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV;
 const DIRECT_BASE_URL = 'https://interior-marketplace-api.onrender.com';
+export const API_BASE_URL = isDev ? '/api' : DIRECT_BASE_URL;
 
 // ─── No-Prefix Endpoints ──────────────────────────────────────────────────────
 // These routes on Tharun's backend do NOT live under /api/* — they must bypass

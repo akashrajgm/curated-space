@@ -1,4 +1,23 @@
-import React, { useRef, Suspense } from 'react';
+import React, { useRef, Suspense, Component } from 'react';
+
+class CanvasErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+  componentDidCatch(error, errorInfo) {
+    console.error("Canvas Error:", error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return <div style={{ width: '100%', height: '100%', background: 'transparent' }} />;
+    }
+    return this.props.children;
+  }
+}
 import { Canvas } from '@react-three/fiber';
 import { Environment, Float, PresentationControls, Center } from '@react-three/drei';
 import { EffectComposer, Vignette, Bloom } from '@react-three/postprocessing';
@@ -76,18 +95,20 @@ export default function Hero3D() {
     <div className="hero-container" style={{ position: 'relative', width: '100%', height: '100vh', marginBottom: '4rem' }} ref={containerRef}>
       <div className="hero-canvas-wrapper" style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
         <Suspense fallback={<div className='bg-gray-100 h-full w-full' />}>
-          <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 5], fov: 45 }} gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}>
-             <ambientLight intensity={0.6} />
-           <directionalLight position={[10, 10, 5]} intensity={1.5} />
-           <PresentationControls global rotation={[0, 0.3, 0]} polar={[-0.4, 0.2]} azimuth={[-1, 0.75]} config={{ mass: 2, tension: 400 }} snap={{ mass: 4, tension: 400 }}>
-             <MinimalKnot />
-           </PresentationControls>
-           <Environment preset="city" />
-           <EffectComposer>
-             <Bloom luminanceThreshold={0.5} luminanceSmoothing={0.9} intensity={1.2} />
-             <Vignette eskil={false} offset={0.15} darkness={1.1} />
-           </EffectComposer>
-          </Canvas>
+          <CanvasErrorBoundary>
+            <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 5], fov: 45 }} gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}>
+               <ambientLight intensity={0.6} />
+               <directionalLight position={[10, 10, 5]} intensity={1.5} />
+               <PresentationControls global rotation={[0, 0.3, 0]} polar={[-0.4, 0.2]} azimuth={[-1, 0.75]} config={{ mass: 2, tension: 400 }} snap={{ mass: 4, tension: 400 }}>
+                 <MinimalKnot />
+               </PresentationControls>
+               <Environment preset="city" />
+               <EffectComposer>
+                 <Bloom luminanceThreshold={0.5} luminanceSmoothing={0.9} intensity={1.2} />
+                 <Vignette eskil={false} offset={0.15} darkness={1.1} />
+               </EffectComposer>
+            </Canvas>
+          </CanvasErrorBoundary>
         </Suspense>
       </div>
       

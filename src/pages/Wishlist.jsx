@@ -16,7 +16,7 @@ export default function Wishlist() {
   
   const handleMove = (item) => {
     addToCart(item);
-    showToast(`Structural unit '${item.title}' shifted beautifully to Cart.`);
+    showToast(`Structural unit '${item?.title || 'Unknown'}' shifted beautifully to Cart.`);
   };
 
   return (
@@ -25,12 +25,12 @@ export default function Wishlist() {
        
        <div className="products-grid">
          {wishlist.map(product => (
-            <motion.div key={product.id} className="product-card" variants={cardHoverVariants} whileHover="hover" whileTap="tap">
-               <div className="product-image-container" style={{ backgroundImage: `url(${product.image})` }}></div>
-               <h3>{product.title}</h3>
-               <p>{product.description}</p>
+            <motion.div key={product?.id} className="product-card" variants={cardHoverVariants} whileHover="hover" whileTap="tap">
+               <div className="product-image-container" style={{ backgroundImage: `url(${product?.image})` }}></div>
+               <h3>{product?.title || 'Product'}</h3>
+               <p>{product?.description || 'No description available'}</p>
                <div className="product-price-row">
-                 <span className="price">{formatCurrency(product.price)}</span>
+                 <span className="price">{formatCurrency(product?.price || 0)}</span>
                  <motion.button 
                    variants={buttonTapVariants} whileHover="hover" whileTap="tap"
                    className="primary-cta" style={{ padding: '0.6rem 1.25rem', fontSize: '0.9rem' }}

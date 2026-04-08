@@ -73,14 +73,14 @@ export default function WishlistPage() {
         <div className="products-grid">
           <AnimatePresence>
             {wishlist.map((product, i) => {
-              const title = product.title || product.name || 'Curated Product';
-              const price = product.price || 0;
-              const image = product.image || '';
+              const title = product?.title || product?.name || 'Curated Product';
+              const price = product?.price || 0;
+              const image = product?.image || '';
               const inWishlist = true; // All items in this page are in wishlist
 
               return (
                 <motion.div
-                  key={product.id}
+                  key={product?.id}
                   className="product-card"
                   layout
                   initial={{ opacity: 0, y: 40 }}
@@ -88,7 +88,7 @@ export default function WishlistPage() {
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.4, delay: i * 0.05 }}
                   whileHover="hover" whileTap="tap" variants={cardHoverVariants}
-                  onClick={() => navigate(`/product/${product.id}`)}
+                  onClick={() => navigate(`/product/${product?.id}`)}
                   style={{ cursor: 'pointer' }}
                 >
                   {/* Image + heart overlay */}

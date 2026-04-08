@@ -61,15 +61,15 @@ export default function ProductDetail() {
           &larr; Back to Catalog
        </button>
        <div className="pdp-grid">
-         <motion.div className="pdp-image-container" layoutId={`product-frame-${product.id}`}>
-           <img loading="lazy" src={product.image} alt={product.title} className="pdp-image" />
+         <motion.div className="pdp-image-container" layoutId={`product-frame-${product?.id}`}>
+           <img loading="eager" src={product?.image || 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&q=80&w=800'} alt={product?.title || 'Product'} className="pdp-image" />
          </motion.div>
-         <div className="pdp-content">
-           <span className="pdp-category">{product.category}</span>
-           <h1 className="pdp-title">{product.title}</h1>
-           <p className="pdp-price">{formatCurrency(product.price)}</p>
+         <div className="pdp-info">
+           <span className="pdp-category">{product?.category || 'Decor'}</span>
+           <h1 className="pdp-title">{product?.title || 'Unknown Product'}</h1>
+           <p className="pdp-price">{formatCurrency(product?.price || 0)}</p>
            <div className="pdp-description">
-             <p>{product.description}</p>
+             <p>{product?.description || 'No description available for this item.'}</p>
              <p style={{ marginTop: '1.25rem', color: 'var(--color-on-surface-variant)' }}>Crafted with premium materials and an eye for detail, this piece offers both visual impact and everyday practicality in any interior.</p>
            </div>
            
