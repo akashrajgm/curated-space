@@ -63,6 +63,7 @@ html {
   min-height: 100vh;
   background-color: var(--color-background);
   overflow-x: hidden;
+  will-change: transform;
 }
 
 .main-content {

@@ -177,7 +177,7 @@ export default function Header() {
                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                  <Link to="/" className="nav-link" onClick={closeMenus}>Home</Link>
                  <Link to="/collections" className="nav-link" onClick={closeMenus}>Categories</Link>
-                 <Link to="/interior-design" className="nav-link" onClick={closeMenus}>Design Services</Link>
+                 {/* Design Services link hidden on mobile as per Step 109 */}
                  <Link to="/spaces" className="nav-link" onClick={closeMenus}>Inspiration</Link>
                  <Link to="/journal" className="nav-link" onClick={closeMenus}>Blog</Link>
                  {user && String(user.role).toLowerCase() === 'vendor' && <Link to="/vendor/dashboard" className="nav-link" onClick={closeMenus} style={{ color: 'var(--color-primary)', fontWeight: 600 }}>Seller Dashboard</Link>}

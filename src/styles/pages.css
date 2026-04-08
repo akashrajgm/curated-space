@@ -631,3 +631,53 @@
      grid-row: 1 / 3;
   }
 }
+
+/* Step 109: Emergency Mobile Optimization & Responsiveness Fix */
+@media (max-width: 768px) {
+  /* 2. Image Ghosting Fix */
+  img, .pdp-image-container img {
+    aspect-ratio: 4 / 5;
+    background-color: #e5e7eb; /* bg-gray-200 */
+    object-fit: cover !important;
+    width: 100% !important;
+  }
+  
+  .product-image-container {
+    background-color: #e5e7eb !important;
+  }
+
+  /* 3. Hero Layout fixes for mobile */
+  .hero-container {
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+    min-height: 100vh;
+  }
+  .hero-canvas-wrapper {
+    position: relative !important;
+    height: 50vh !important;
+    order: 2 !important;
+  }
+  .hero-text-wrapper {
+    position: relative !important;
+    transform: none !important;
+    top: 0 !important;
+    padding: 2rem !important;
+    margin-top: 10vh !important;
+    order: 1 !important;
+    text-align: center;
+  }
+  
+  /* 5. Responsive Grids - force exactly 1 column */
+  .products-grid {
+    grid-template-columns: 1fr !important;
+    width: 100% !important;
+  }
+  .bento-grid-spaces, .dashboard-layout, .pdp-grid, .cart-layout, .checkout-layout {
+    grid-template-columns: 1fr !important;
+    width: 100% !important;
+  }
+  .product-card {
+    width: 100% !important;
+  }
+}

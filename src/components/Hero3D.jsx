@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Environment, Float, PresentationControls, Center } from '@react-three/drei';
 import { EffectComposer, Vignette, Bloom } from '@react-three/postprocessing';
@@ -73,10 +73,11 @@ export default function Hero3D() {
   if (performanceMode) return <div style={{ height: '5vh' }}></div>;
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100vh', marginBottom: '4rem' }} ref={containerRef}>
-      <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
-        <Canvas camera={{ position: [0, 0, 5], fov: 45 }} gl={{ antialias: true, alpha: true }}>
-           <ambientLight intensity={0.6} />
+    <div className="hero-container" style={{ position: 'relative', width: '100%', height: '100vh', marginBottom: '4rem' }} ref={containerRef}>
+      <div className="hero-canvas-wrapper" style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
+        <Suspense fallback={<div className='bg-gray-100 h-full w-full' />}>
+          <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 5], fov: 45 }} gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}>
+             <ambientLight intensity={0.6} />
            <directionalLight position={[10, 10, 5]} intensity={1.5} />
            <PresentationControls global rotation={[0, 0.3, 0]} polar={[-0.4, 0.2]} azimuth={[-1, 0.75]} config={{ mass: 2, tension: 400 }} snap={{ mass: 4, tension: 400 }}>
              <MinimalKnot />
@@ -86,10 +87,11 @@ export default function Hero3D() {
              <Bloom luminanceThreshold={0.5} luminanceSmoothing={0.9} intensity={1.2} />
              <Vignette eskil={false} offset={0.15} darkness={1.1} />
            </EffectComposer>
-        </Canvas>
+          </Canvas>
+        </Suspense>
       </div>
       
-      <div style={{ position: 'absolute', top: '50%', left: '0', transform: 'translateY(-50%)', zIndex: 10, pointerEvents: 'none', paddingLeft: '5vw' }}>
+      <div className="hero-text-wrapper" style={{ position: 'absolute', top: '50%', left: '0', transform: 'translateY(-50%)', zIndex: 10, pointerEvents: 'none', paddingLeft: '5vw' }}>
         <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(3rem, 8vw, 6rem)', color: 'var(--color-on-surface)', letterSpacing: '-3px', lineHeight: 1, margin: 0 }}>
           {headline.split(' ').map((word, i) => (
              <span key={i} style={{ display: 'inline-block', overflow: 'hidden', marginRight: '1.5rem' }}>
