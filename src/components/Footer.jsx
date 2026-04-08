@@ -6,7 +6,7 @@ export default function Footer() {
     <footer className="site-footer">
       <div className="footer-info">
         <h3>CuratedStore</h3>
-        <p>Premium Architectural E-Commerce Platform</p>
+        <p>Premium Furniture & Home Decor</p>
       </div>
       <div className="site-navigation">
         <a href="#" className="nav-link">Support</a>

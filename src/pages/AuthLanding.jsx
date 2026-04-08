@@ -23,6 +23,8 @@ export default function AuthLanding() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [socialLoading, setSocialLoading] = useState(null);
+  const [corsBlocked, setCorsBlocked] = useState(false);
+  const [serverError, setServerError] = useState(null);
 
   const handleSocialLogin = (provider) => {
     setSocialLoading(provider);
@@ -35,15 +37,44 @@ export default function AuthLanding() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    try {
-      await login(email, password);
-      showToast('Authentication node resolved. Welcome.');
-      navigate('/');
-    } catch (err) {
-      showToast('Invalid credentials provided.', 'error');
-    } finally {
-      setIsLoading(false);
+    let attempts = 0;
+    const maxRetries = 3;
+    
+    while(attempts < maxRetries) {
+        try {
+          setServerError(null);
+          const resolvedUser = await login(email, password);
+          showToast('Signed in successfully. Welcome back!');
+          if (resolvedUser && resolvedUser.role === 'vendor') {
+             navigate('/vendor/dashboard');
+          } else {
+             navigate('/');
+          }
+          setIsLoading(false);
+          return;
+        } catch (err) {
+          if (err.message && err.message.includes('Failed to fetch')) {
+             attempts++;
+             if (attempts === maxRetries) {
+                setServerError('Network unreachable. Is the Render server sleeping?');
+             }
+             if (attempts < maxRetries) {
+                showToast(`Server waking up... retrying (${attempts}/${maxRetries})`);
+                await new Promise(res => setTimeout(res, 3000));
+                continue;
+             }
+          } else if (err.message && (err.message.includes('500') || err.message.includes('Internal'))) {
+             setServerError('500 Server Error — Backend OAuth2 mismatch. Tharun needs to check Render logs for a Traceback.');
+             showToast('Server-side error during login.');
+             break;
+          } else {
+             setServerError(err.message);
+             showToast(err.message || 'Invalid credentials.');
+             break;
+          }
+        }
     }
+    setIsLoading(false);
   };
 
   const inputStyle = {
@@ -76,13 +107,24 @@ export default function AuthLanding() {
        </div>
 
        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4rem', position: 'relative' }}>
+          {serverError && (
+             <div style={{ position: 'absolute', top: '10rem', right: '3rem', background: serverError.includes('500') ? '#f59e0b' : '#DC2626', color: '#fff', padding: '1.5rem', borderRadius: '12px', zIndex: 1000, boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)', maxWidth: '300px' }}>
+                <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ fontSize: '1.5rem' }}>{serverError.includes('500') ? '⚠️' : '🔴'}</span> {serverError.includes('500') ? 'Server-Side Error' : 'Connection Issue'}
+                </div>
+                <p style={{ fontSize: '0.85rem', marginBottom: '1rem', lineHeight: 1.5 }}>{serverError}</p>
+                <a href="https://interior-marketplace-api.onrender.com/docs" target="_blank" rel="noopener noreferrer" style={{ display: 'block', textAlign: 'center', background: '#fff', color: '#333', padding: '0.8rem', borderRadius: '6px', fontSize: '0.9rem', fontWeight: 800, textDecoration: 'none' }}>
+                   Check Server Status
+                </a>
+             </div>
+          )}
           <div style={{ position: 'absolute', top: '2rem', right: '3rem', zIndex: 10 }}>
              <button onClick={() => navigate('/')} className="ghost-button" style={{ fontSize: '1.5rem', cursor: 'pointer', border: 'none', background: 'transparent', color: '#111827' }}>✕</button>
           </div>
 
           <div style={{ width: '100%', maxWidth: '400px' }}>
              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '2.5rem', marginBottom: '0.5rem', letterSpacing: '-1px', color: '#111827' }}>Sign In</h2>
-             <p style={{ fontFamily: 'var(--font-body)', fontSize: '1rem', color: '#6b7280', marginBottom: '2.5rem' }}>Access your personalized spatial nodes.</p>
+             <p style={{ fontFamily: 'var(--font-body)', fontSize: '1rem', color: '#6b7280', marginBottom: '2.5rem' }}>Welcome back. Sign in to continue.</p>
 
              <form onSubmit={handleSubmit}>
                 <label style={labelStyle}>Email Address</label>
@@ -135,8 +177,8 @@ export default function AuthLanding() {
              </div>
 
              <div style={{ textAlign: 'center' }}>
-                <span style={{ fontSize: '0.9rem', color: '#6b7280' }}>Create a new node? </span>
-                <Link to="/register" style={{ color: 'var(--color-primary)', fontWeight: 600, textDecoration: 'none' }}>Register Layout</Link>
+                 <span style={{ fontSize: '0.9rem', color: '#6b7280' }}>Don't have an account? </span>
+                 <Link to="/register" style={{ color: 'var(--color-primary)', fontWeight: 600, textDecoration: 'none' }}>Create an account</Link>
              </div>
           </div>
        </div>

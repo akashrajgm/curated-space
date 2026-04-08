@@ -1,39 +1,156 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { pageVariants, cardHoverVariants } from '../utils/motionVariants';
+import { pageVariants, cardHoverVariants, buttonTapVariants } from '../utils/motionVariants';
+import '../styles/pages.css';
 
 const articles = [
-  { title: "The Art of Minimalist Lighting", desc: "Illumination serving dual purposes as an isolated architectural anchor and a contextual map navigating shadows across negative space constraints.", img: "https://images.unsplash.com/photo-1513506003901-1e6a229e9d15?auto=format&fit=crop&w=800" },
-  { title: "Concrete Elements in Soft Architecture", desc: "Balancing rough brutalist structures with tailored interior linens to prevent the living area from feeling sterile while securing profound geometry.", img: "https://images.unsplash.com/photo-1533090481720-856c6e3c1fdc?auto=format&fit=crop&w=800" },
-  { title: "Sustaining Form Through Oak", desc: "Bridging the visual temperature gap using natural wood grain structures aligned rigidly against strict white parameters.", img: "https://images.unsplash.com/photo-1585257917822-4a00473ce17f?auto=format&fit=crop&w=800" }
+  {
+    title: 'How to Choose the Perfect Minimalist Lighting',
+    desc: "Good lighting doesn't just illuminate a room — it defines it. Learn how to pick the right fixtures that work with your space's natural light, create mood without clutter, and make every corner feel intentional.",
+    img: 'https://images.pexels.com/photos/1123262/pexels-photo-1123262.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    tag: 'Lighting',
+    readTime: '4 min read',
+  },
+  {
+    title: 'Making Concrete Elements Feel Cozy',
+    desc: "Concrete has a reputation for being cold and industrial. But with the right textiles, wood accents, and lighting, it becomes one of the warmest materials in your home. Here's how to strike that balance.",
+    img: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&q=80&w=1200',
+    tag: 'Interior Design',
+    readTime: '5 min read',
+  },
+  {
+    title: 'Why Oak Furniture is a Lifetime Investment',
+    desc: "Oak furniture doesn't go out of style — it gets better with age. We break down why solid oak is worth the upfront cost, how to care for it properly, and which pieces give you the best long-term value.",
+    img: 'https://images.unsplash.com/photo-1540638349517-3abd5afc5847?auto=format&fit=crop&q=80&w=1200',
+    tag: 'Materials',
+    readTime: '6 min read',
+  },
 ];
 
 export default function Journal() {
   return (
-    <motion.div className="journal-page" variants={pageVariants} initial="initial" animate="animate" exit="exit" style={{ padding: '2rem 0', maxWidth: '1000px', margin: '0 auto' }}>
+    <motion.div
+      className="journal-page"
+      variants={pageVariants} initial="initial" animate="animate" exit="exit"
+      style={{ padding: '3rem 2rem 6rem', maxWidth: '1100px', margin: '0 auto' }}
+    >
+      {/* Page header */}
       <header style={{ marginBottom: '5rem', textAlign: 'center' }}>
-         <h1 className="page-title" style={{ fontSize: '3rem' }}>Editorial Volumes</h1>
+        <p style={{ fontSize: '0.75rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--color-primary)', fontWeight: 600, marginBottom: '1rem' }}>
+          Our Blog
+        </p>
+        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2.2rem, 5vw, 4rem)', letterSpacing: '-0.05em', color: 'var(--color-on-surface)', margin: '0 0 1rem' }}>
+          Design Stories
+        </h1>
+        <p style={{ color: 'var(--color-on-surface-variant)', fontSize: '1.05rem', maxWidth: '460px', margin: '0 auto' }}>
+          Tips, trends, and ideas to help you design a home you love.
+        </p>
       </header>
-      
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '6rem' }}>
-         {articles.map((art, i) => (
-           <motion.div 
-              key={i} 
-              variants={cardHoverVariants} whileHover="hover" 
-              initial={{ opacity: 0, y: 80 }} 
-              whileInView={{ opacity: 1, y: 0 }} 
-              viewport={{ once: true, margin: "-100px" }} 
-              transition={{ duration: 0.8, delay: i * 0.15, ease: [0.76, 0, 0.24, 1] }} 
-              style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 768 ? '1fr' : '1.2fr 1fr', gap: '4rem', alignItems: 'center', cursor: 'pointer', background: 'transparent' }}
-           >
-              <div style={{ width: '100%', aspectRatio: '16/10', borderRadius: 'var(--radius-xl)', overflow: 'hidden', backgroundImage: `url(${art.img})`, backgroundSize: 'cover', backgroundPosition: 'center', boxShadow: '0 30px 60px rgba(0,0,0,0.05)' }}></div>
-              <div>
-                 <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '2.5rem', marginBottom: '1.25rem', lineHeight: 1.1, color: 'var(--color-on-surface)' }}>{art.title}</h2>
-                 <p style={{ fontFamily: 'var(--font-body)', fontSize: '1.15rem', color: 'var(--color-on-surface-variant)', lineHeight: 1.7 }}>{art.desc}</p>
-                 <button className="ghost-button" style={{ marginTop: '2.5rem', borderBottom: '2px solid var(--color-primary)', padding: '0 0 0.25rem 0', borderRadius: 0, fontWeight: 700, fontSize: '1.05rem', color: 'var(--color-primary)' }}>Read Construct &rarr;</button>
+
+      {/* Articles */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '5rem' }}>
+        {articles.map((art, i) => (
+          <motion.article
+            key={i}
+            variants={cardHoverVariants} whileHover="hover"
+            initial={{ opacity: 0, y: 60 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.7, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+            style={{
+              display: 'grid',
+              gridTemplateColumns: i % 2 === 0 ? '1.3fr 1fr' : '1fr 1.3fr',
+              gap: '4rem',
+              alignItems: 'center',
+              cursor: 'pointer',
+            }}
+          >
+            {/* Image — swap order on odd articles */}
+            {i % 2 !== 0 && (
+              <div style={{ order: 2 }} />
+            )}
+            <div style={{
+              aspectRatio: '16/10',
+              borderRadius: '20px',
+              overflow: 'hidden',
+              boxShadow: '0 20px 50px rgba(0,0,0,0.08)',
+              order: i % 2 !== 0 ? 2 : 1,
+              minHeight: '280px',
+              background: '#f1f5f9',
+            }}>
+              <img
+                src={art.img}
+                alt={art.title}
+                loading={i === 0 ? 'eager' : 'lazy'}
+                onError={(e) => { e.target.onerror = null; e.target.src = 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1200'; }}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', minHeight: '280px' }}
+              />
+            </div>
+
+            {/* Text content */}
+            <div style={{ order: i % 2 !== 0 ? 1 : 2 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.25rem' }}>
+                <span style={{
+                  padding: '0.3rem 0.75rem',
+                  background: 'rgba(99,102,241,0.08)',
+                  color: 'var(--color-primary)',
+                  borderRadius: '999px',
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.05em',
+                  textTransform: 'uppercase',
+                }}>
+                  {art.tag}
+                </span>
+                <span style={{ fontSize: '0.8rem', color: 'var(--color-on-surface-variant)' }}>
+                  {art.readTime}
+                </span>
               </div>
-           </motion.div>
-         ))}
+
+              <h2 style={{
+                fontFamily: 'var(--font-display)',
+                fontSize: 'clamp(1.5rem, 2.5vw, 2.2rem)',
+                letterSpacing: '-0.03em',
+                color: 'var(--color-on-surface)',
+                lineHeight: 1.2,
+                margin: '0 0 1rem',
+              }}>
+                {art.title}
+              </h2>
+
+              <p style={{
+                fontSize: '1rem',
+                color: 'var(--color-on-surface-variant)',
+                lineHeight: 1.75,
+                margin: '0 0 2rem',
+              }}>
+                {art.desc}
+              </p>
+
+              <motion.button
+                variants={buttonTapVariants} whileHover="hover" whileTap="tap"
+                className="ghost-button"
+                style={{
+                  borderBottom: '2px solid var(--color-primary)',
+                  padding: '0 0 0.3rem',
+                  borderRadius: 0,
+                  fontWeight: 700,
+                  fontSize: '0.95rem',
+                  color: 'var(--color-primary)',
+                  background: 'transparent',
+                  border: 'none',
+                  borderBottom: '2px solid var(--color-primary)',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                }}
+              >
+                Read More →
+              </motion.button>
+            </div>
+          </motion.article>
+        ))}
       </div>
     </motion.div>
   );

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import { useToast } from '../context/ToastContext';
 import { useSearch } from '../context/SearchContext';
 import { apiClient } from '../api/apiClient';
@@ -13,7 +14,8 @@ import ArchitecturalImage from '../components/ArchitecturalImage';
 import '../styles/pages.css';
 
 export default function Storefront() {
-  const { addToCart } = useCart();
+  const { addToCart, cartItems, updateQuantity, removeFromCart } = useCart();
+  const { wishlist, toggleWishlist } = useWishlist();
   const { showToast } = useToast();
   const { searchQuery } = useSearch();
   const navigate = useNavigate();
@@ -30,7 +32,10 @@ export default function Storefront() {
       setIsLoading(true);
       try {
         const data = await apiClient('/products');
-        const mappedData = (Array.isArray(data) && data.length > 0 ? data : mockProducts).map((p, index) => ({
+        // If the API only returns 1 or 0 items, supplement with the full local catalog
+        // so the showroom grid stays populated until Tharun's inventory is seeded.
+        const sourceData = (Array.isArray(data) && data.length > 1) ? data : mockProducts;
+        const mappedData = sourceData.map((p, index) => ({
            id: p.id,
            title: p.name || p.title || 'Untitled Structure',
            description: p.description || 'Description unavailable.',
@@ -38,6 +43,8 @@ export default function Storefront() {
            category: p.category || 'All',
            image: p.image || mockProducts[index % mockProducts.length]?.image || 'https://images.unsplash.com/photo-1592078615290-033ee584e267?auto=format&fit=crop&w=800&q=80'
         }));
+        
+        console.log('📦 TOTAL PRODUCTS FROM API:', data?.length ?? 0, '| Rendering:', mappedData.length, mappedData);
         setProducts(mappedData);
       } catch (err) {
         setProducts(mockProducts);
@@ -71,16 +78,19 @@ export default function Storefront() {
   };
 
   const filteredProducts = products.filter(p => {
-    const passedCategory = activeCategory === 'All' || p.category === activeCategory;
-    const passedSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         p.description.toLowerCase().includes(searchQuery.toLowerCase());
+    // Fuzzy Category Matching: bypass entirely on 'All', strip pluralization for tight matches
+    const passedCategory = activeCategory === 'All' || 
+                           (p.category && p.category.toLowerCase().includes(activeCategory.toLowerCase().replace(/s$/, '')));
+    const query = (searchQuery || '').toLowerCase();
+    const passedSearch = (p.title || '').toLowerCase().includes(query) || 
+                         (p.description || '').toLowerCase().includes(query);
     return passedCategory && passedSearch;
   });
 
   const handleAddToCart = (e, product) => {
     e.stopPropagation();
     addToCart(product);
-    showToast(`${product.title} curated to your cart space.`);
+    showToast(`${product.title} added to your cart.`);
   };
 
   return (
@@ -103,11 +113,11 @@ export default function Storefront() {
         
         {filteredProducts.length === 0 && !isLoading && (
           <div style={{ textAlign: 'center', padding: '6rem', color: 'var(--color-on-surface-variant)', fontSize: '1.25rem' }}>
-             No structural blocks resolved for that search footprint.
+             {searchQuery || activeCategory !== 'All' ? 'No products found for that search.' : 'The showroom is empty. Add products as a Seller to see them here.'}
           </div>
         )}
 
-        <div className="products-grid">
+        <div className="products-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <AnimatePresence>
             {isLoading ? (
               [1, 2, 3, 4, 5, 6, 7, 8].map(n => (
@@ -119,26 +129,96 @@ export default function Storefront() {
                 </motion.div>
               ))
             ) : (
-              filteredProducts.slice(0, visibleCount).map((product, i) => (
-                <motion.div 
-                   key={product.id} className="product-card" onClick={() => navigate(`/product/${product.id}`)}
-                   initial={{ opacity: 0, y: 80 }} 
-                   whileInView={{ opacity: 1, y: 0 }} 
-                   viewport={{ once: true, margin: "-100px" }} 
-                   transition={{ duration: 0.8, delay: (i % 4) * 0.1, ease: [0.76, 0, 0.24, 1] }} /* Staggered Reveal Slide-and-Fade */
-                   whileHover="hover" whileTap="tap" variants={cardHoverVariants}
-                >
-                  <ArchitecturalImage src={product.image} alt={product.title} className="product-image-container" style={{ background: 'transparent' }} />
-                  <h3>{product.title}</h3>
-                  <p>{product.description}</p>
-                  <div className="product-price-row">
-                    <span className="price">{formatCurrency(product.price)}</span>
-                    <motion.button variants={buttonTapVariants} whileHover="hover" whileTap="tap" className="primary-cta" style={{ padding: '0.6rem 1.25rem', fontSize: '0.9rem', zIndex: 10 }} onClick={(e) => handleAddToCart(e, product)}>
-                      Add to Cart
-                    </motion.button>
-                  </div>
-                </motion.div>
-              ))
+              filteredProducts.slice(0, visibleCount).map((product, i) => {
+                const existingItem = (cartItems || []).find(item => item.product_id === product.id || item.id === product.id);
+                const inWishlist = (wishlist || []).some(item => item.id === product.id || item.product_id === product.id);
+                return (
+                  <motion.div
+                    key={product.id}
+                    className="product-card"
+                    onClick={() => navigate(`/product/${product.id}`)}
+                    initial={{ opacity: 0, y: 80 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: '-100px' }}
+                    transition={{ duration: 0.8, delay: (i % 4) * 0.1, ease: [0.76, 0, 0.24, 1] }}
+                    whileHover="hover" whileTap="tap" variants={cardHoverVariants}
+                  >
+                    {/* Image + Heart overlay wrapper */}
+                    <div style={{ position: 'relative', overflow: 'hidden', borderRadius: 'var(--radius-lg)' }}>
+                      <ArchitecturalImage
+                        src={product.image}
+                        alt={product.title}
+                        className="product-image-container"
+                        style={{ background: 'transparent' }}
+                      />
+                      <button
+                        onClick={(e) => { e.stopPropagation(); toggleWishlist(product); }}
+                        style={{
+                          position: 'absolute',
+                          top: '10px',
+                          right: '10px',
+                          background: 'rgba(255,255,255,0.85)',
+                          backdropFilter: 'blur(6px)',
+                          border: 'none',
+                          borderRadius: '50%',
+                          width: '36px',
+                          height: '36px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: 'pointer',
+                          zIndex: 10,
+                          transition: 'transform 0.2s ease, background 0.2s ease',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.15)'}
+                        onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                        title={inWishlist ? 'Remove from wishlist' : 'Save to wishlist'}
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="18" height="18"
+                          fill={inWishlist ? 'var(--color-primary)' : 'none'}
+                          stroke={inWishlist ? 'var(--color-primary)' : '#888'}
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                        </svg>
+                      </button>
+                    </div>
+
+                    <h3>{product.title}</h3>
+                    <p>{product.description}</p>
+                    <div className="product-price-row">
+                      <span className="price">{formatCurrency(product.price)}</span>
+                      {existingItem ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); existingItem.quantity > 1 ? updateQuantity(product.id, existingItem.quantity - 1) : removeFromCart(existingItem.cart_item_id || existingItem.id); }}
+                            className="ghost-button" style={{ padding: '0.2rem 0.5rem' }}
+                          >−</button>
+                          <span>{existingItem.quantity}</span>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); updateQuantity(product.id, existingItem.quantity + 1); }}
+                            className="ghost-button" style={{ padding: '0.2rem 0.5rem' }}
+                          >+</button>
+                        </div>
+                      ) : (
+                        <motion.button
+                          variants={buttonTapVariants} whileHover="hover" whileTap="tap"
+                          className="primary-cta"
+                          style={{ padding: '0.6rem 1.25rem', fontSize: '0.9rem', zIndex: 10 }}
+                          onClick={(e) => handleAddToCart(e, product)}
+                        >
+                          Add to Cart
+                        </motion.button>
+                      )}
+                    </div>
+                  </motion.div>
+                );
+              })
             )}
           </AnimatePresence>
         </div>

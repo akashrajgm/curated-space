@@ -3,8 +3,9 @@ import { motion } from 'framer-motion';
 
 export default function ArchitecturalImage({ src, alt, className, style }) {
   const [isLoaded, setIsLoaded] = useState(false);
-  const [hasError, setHasError] = useState(false);
-  
+
+  const FALLBACK = 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&q=80&w=800';
+
   let lowResSrc = src;
   let highResSrc = src;
 
@@ -16,39 +17,34 @@ export default function ArchitecturalImage({ src, alt, className, style }) {
 
   return (
     <div className={className} style={{ position: 'relative', overflow: 'hidden', backgroundColor: 'var(--color-surface-dim)', ...style }}>
-       {!hasError && (
-         <img 
-            src={lowResSrc} 
-            alt={`Placeholder ${alt}`} 
-            style={{ 
-               width: '100%', height: '100%', objectFit: 'cover', 
-               filter: 'blur(20px)', 
-               transform: 'scale(1.1)', 
-               position: 'absolute', inset: 0,
-               zIndex: 0
-            }} 
-         />
-       )}
-       
-       {!hasError ? (
-         <motion.img 
-            src={highResSrc} 
-            alt={alt}
-            onLoad={() => setIsLoaded(true)}
-            onError={() => setHasError(true)}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: isLoaded ? 1 : 0 }}
-            transition={{ duration: 1.2, ease: 'easeOut' }}
-            style={{ 
-               width: '100%', height: '100%', objectFit: 'cover', 
-               position: 'relative', zIndex: 1 
-            }}
-         />
-       ) : (
-         <div style={{ width: '100%', height: '100%', backgroundColor: '#e5e7eb', position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ fontSize: '0.85rem', color: '#9ca3af', fontFamily: 'var(--font-body)', letterSpacing: '1px' }}>ASSET UNAVAILABLE</span>
-         </div>
-       )}
+       {/* Blurred low-res placeholder shown while high-res loads */}
+       <img
+         src={lowResSrc}
+         alt=""
+         aria-hidden="true"
+         style={{
+           width: '100%', height: '100%', objectFit: 'cover',
+           filter: 'blur(20px)',
+           transform: 'scale(1.1)',
+           position: 'absolute', inset: 0,
+           zIndex: 0
+         }}
+       />
+
+       {/* High-res image with direct onError fallback — no state flicker */}
+       <motion.img
+          src={highResSrc}
+          alt={alt}
+          onLoad={() => setIsLoaded(true)}
+          onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK; setIsLoaded(true); }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: isLoaded ? 1 : 0 }}
+          transition={{ duration: 1.2, ease: 'easeOut' }}
+          style={{
+            width: '100%', height: '100%', objectFit: 'cover',
+            position: 'relative', zIndex: 1
+          }}
+       />
     </div>
   );
 }

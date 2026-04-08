@@ -69,11 +69,13 @@ export default function Header() {
             />
           </motion.div>
 
-          <Magnetic>
-            <Link to="/cart" className="nav-link" style={{ fontWeight: '600' }}>
-              Bag {cartCount > 0 && `(${cartCount})`}
-            </Link>
-          </Magnetic>
+          {(!user || (user && user.role && user.role.toLowerCase() !== 'vendor')) && (
+            <Magnetic>
+              <Link to="/cart" className="nav-link" style={{ fontWeight: '600' }}>
+                Bag {cartCount > 0 && `(${cartCount})`}
+              </Link>
+            </Magnetic>
+          )}
           
           {user ? (
             <div style={{ position: 'relative' }} className="auth-button-desktop">
@@ -89,25 +91,60 @@ export default function Header() {
                
                <AnimatePresence>
                   {isDropdownOpen && (
-                     <motion.div 
-                       initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }} transition={{ duration: 0.2 }}
-                       style={{ position: 'absolute', top: '120%', right: 0, width: '240px', background: 'var(--color-surface-container-lowest)', border: '1px solid rgba(195, 198, 215, 0.2)', boxShadow: '0 20px 40px rgba(0,0,0,0.08)', borderRadius: 'var(--radius-lg)', zIndex: 9999, overflow: 'hidden' }}
-                     >
-                        <div style={{ padding: '1.25rem', borderBottom: '1px solid var(--color-surface-variant)' }}>
-                           <p style={{ fontWeight: 600, fontFamily: 'var(--font-body)', fontSize: '0.95rem', color: 'var(--color-on-surface)' }}>{user.name || 'Architect'}</p>
-                           <p style={{ fontSize: '0.85rem', color: 'var(--color-on-surface-variant)', marginTop: '0.2rem' }}>{user.role} Context</p>
-                        </div>
-                        <div style={{ padding: '0.5rem 0' }} className="dropdown-links">
-                           <Link to="/profile" className="dropdown-item" onClick={closeMenus}>Account Overview</Link>
-                           <Link to="/orders" className="dropdown-item" onClick={closeMenus}>My Orders</Link>
-                           <Link to="/wishlist" className="dropdown-item" onClick={closeMenus}>Wishlist</Link>
-                           <Link to="/settings" className="dropdown-item" onClick={closeMenus}>Saved Settings</Link>
-                           <div style={{ height: '1px', background: 'var(--color-surface-variant)', margin: '0.5rem 0' }}></div>
-                           <button className="dropdown-item" onClick={handleLogout} style={{ width: '100%', textAlign: 'left', color: 'var(--color-error)' }}>Sign Out Session</button>
-                        </div>
-                     </motion.div>
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                      className="account-dropdown"
+                      style={{
+                        position: 'absolute',
+                        top: '120%',
+                        right: 0,
+                        width: '240px',
+                        background: 'var(--color-surface-container-lowest)',
+                        border: '1px solid rgba(195, 198, 215, 0.2)',
+                        boxShadow: '0 20px 40px rgba(0,0,0,0.08)',
+                        borderRadius: 'var(--radius-lg)',
+                        zIndex: 9999,
+                        overflow: 'hidden',
+                      }}
+                    >
+                      <div style={{ padding: '1.25rem', borderBottom: '1px solid var(--color-surface-variant)' }}>
+                        <p style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--color-on-surface)' }}>
+                          Hello, {user?.name || user?.email?.split('@')[0] || 'there'}
+                        </p>
+                        <p style={{ fontSize: '0.85rem', color: 'var(--color-on-surface-variant)', marginTop: '0.2rem' }}>
+                          {user?.role?.toLowerCase() === 'vendor' ? 'Seller Account' : 'My Account'}
+                        </p>
+                      </div>
+                      <div style={{ padding: '0.5rem 0' }} className="dropdown-links">
+                        {user?.role?.toLowerCase() === 'vendor' ? (
+                          <>
+                            <Link to="/vendor/sales" className="dropdown-item" onClick={closeMenus}>My Sales</Link>
+                            <Link to="/vendor/catalog" className="dropdown-item" onClick={closeMenus}>My Products</Link>
+                            <Link to="/vendor/settings" className="dropdown-item" onClick={closeMenus}>Business Settings</Link>
+                          </>
+                        ) : (
+                          <>
+                            <Link to="/account/overview" className="dropdown-item" onClick={closeMenus}>Account Overview</Link>
+                            <Link to="/account/orders" className="dropdown-item" onClick={closeMenus}>My Orders</Link>
+                            <Link to="/account/wishlist" className="dropdown-item" onClick={closeMenus}>Wishlist</Link>
+                            <Link to="/account/settings" className="dropdown-item" onClick={closeMenus}>Saved Settings</Link>
+                          </>
+                        )}
+                      </div>
+                      <div style={{ height: '1px', background: 'var(--color-surface-variant)', margin: '0.5rem 0' }}></div>
+                      <button
+                        className="dropdown-item"
+                        onClick={handleLogout}
+                        style={{ width: '100%', textAlign: 'left', color: 'var(--color-error)', padding: '0.75rem 1.25rem' }}
+                      >
+                        Sign Out Session
+                      </button>
+                    </motion.div>
                   )}
-               </AnimatePresence>
+                </AnimatePresence>
             </div>
           ) : (
             <Magnetic>
@@ -138,12 +175,12 @@ export default function Header() {
                </div>
                
                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                 <Link to="/" className="nav-link" onClick={closeMenus}>Storefront</Link>
-                 <Link to="/collections" className="nav-link" onClick={closeMenus}>Collections</Link>
-                 <Link to="/interior-design" className="nav-link" onClick={closeMenus}>Interior Design</Link>
-                 <Link to="/spaces" className="nav-link" onClick={closeMenus}>Spaces</Link>
-                 <Link to="/journal" className="nav-link" onClick={closeMenus}>Journal</Link>
-                 {user && String(user.role).toLowerCase() === 'vendor' && <Link to="/dashboard" className="nav-link" onClick={closeMenus} style={{ color: 'var(--color-primary)', fontWeight: 600 }}>Vendor Edge</Link>}
+                 <Link to="/" className="nav-link" onClick={closeMenus}>Home</Link>
+                 <Link to="/collections" className="nav-link" onClick={closeMenus}>Categories</Link>
+                 <Link to="/interior-design" className="nav-link" onClick={closeMenus}>Design Services</Link>
+                 <Link to="/spaces" className="nav-link" onClick={closeMenus}>Inspiration</Link>
+                 <Link to="/journal" className="nav-link" onClick={closeMenus}>Blog</Link>
+                 {user && String(user.role).toLowerCase() === 'vendor' && <Link to="/vendor/dashboard" className="nav-link" onClick={closeMenus} style={{ color: 'var(--color-primary)', fontWeight: 600 }}>Seller Dashboard</Link>}
                </div>
                
                <div style={{ height: '1px', background: 'var(--color-surface-variant)' }}></div>

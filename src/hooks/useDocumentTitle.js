@@ -9,7 +9,7 @@ export function useDocumentTitle() {
     let title = "Stitch Frontend";
     
     if (path === '/') title = "Curated Store | Editorial Objects";
-    else if (path.includes('/product')) title = "Curated Store | Architectural Node";
+    else if (path.includes('/product')) title = "Product | CuratedSpace";
     else if (path.includes('/collections')) title = "Curated Store | The Collections";
     else if (path.includes('/interior-design')) title = "Curated Store | Spaces & Dimensions";
     else if (path.includes('/spaces')) title = "Curated Store | Living Spaces";

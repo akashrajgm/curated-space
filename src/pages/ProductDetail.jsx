@@ -70,7 +70,7 @@ export default function ProductDetail() {
            <p className="pdp-price">{formatCurrency(product.price)}</p>
            <div className="pdp-description">
              <p>{product.description}</p>
-             <p style={{ marginTop: '1.25rem', color: 'var(--color-on-surface-variant)' }}>Featuring premium materials and architectural integrity, this piece offers both visual impact and everyday utility inside any environment.</p>
+             <p style={{ marginTop: '1.25rem', color: 'var(--color-on-surface-variant)' }}>Crafted with premium materials and an eye for detail, this piece offers both visual impact and everyday practicality in any interior.</p>
            </div>
            
            <motion.button 

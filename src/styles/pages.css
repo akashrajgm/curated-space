@@ -25,10 +25,22 @@
 
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(1, minmax(0, 1fr));
   gap: 2rem;
   padding: 2rem 0;
   align-items: stretch;
+}
+
+@media (min-width: 768px) {
+  .products-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .products-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 .product-card {
@@ -43,7 +55,8 @@
 
 .product-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 30px 50px rgba(25, 27, 35, 0.06);
+  box-shadow: 0 30px 50px rgba(79, 70, 229, 0.15); /* Restoring high-end Indigo metadata glow */
+  border-color: rgba(79, 70, 229, 0.5);
 }
 
 .product-image-container {

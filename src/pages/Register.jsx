@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
-import { apiClient } from '../api/apiClient';
 import { useToast } from '../context/ToastContext';
 import { pageVariants, buttonTapVariants } from '../utils/motionVariants';
 
@@ -17,41 +16,64 @@ const GridOverlay = () => (
 );
 
 export default function Register() {
-  const { register } = useAuth();
+  const { register, login } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
   
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '', otp: '', password: '', role: 'customer' });
+  const [formData, setFormData] = useState({ email: '', password: '', role: 'customer' });
   const [isLoading, setIsLoading] = useState(false);
-  const [otpSent, setOtpSent] = useState(false);
-
-  const handleSendOTP = async () => {
-    if (!formData.phone || formData.phone.length < 10) {
-       showToast('Invalid technical phone parameter.', 'error');
-       return;
-    }
-    showToast(`Dispatching Verification Geometry to ${formData.phone}`);
-    try {
-      await apiClient('/auth/send-otp', { method: 'POST', body: JSON.stringify({ phone: formData.phone }) });
-    } catch(err) {
-      // Intentionally suppressing API mismatches for frontend isolated demonstration
-    }
-    setOtpSent(true);
-  };
+  const [serverError, setServerError] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.otp.length !== 6) return;
     setIsLoading(true);
-    try {
-      await register(formData);
-      showToast('Architectural node established.');
-      navigate('/');
-    } catch (err) {
-      showToast('Registration parameters failed.', 'error');
-    } finally {
-      setIsLoading(false);
+    let attempts = 0;
+    const maxRetries = 3;
+
+    while (attempts < maxRetries) {
+      try {
+        setServerError(null);
+        // Register the user first
+        const registerResult = await register({
+          email: formData.email,
+          password: formData.password,
+          role: formData.role,
+        });
+        // Ensure we have a fresh token and user state by explicitly logging in
+        const loginResult = await login(formData.email, formData.password);
+        // Navigation based on role after full auth sync
+        if (formData.role === 'vendor' || (loginResult && loginResult.role === 'vendor')) {
+          showToast('Seller account created! Setting up your store...');
+          navigate('/vendor/onboarding');
+        } else {
+          showToast('Account created! Welcome.');
+          navigate('/');
+        }
+        setIsLoading(false);
+        return;
+      } catch (err) {
+        if (err.message && err.message.includes('Failed to fetch')) {
+          attempts++;
+          if (attempts === maxRetries) {
+            setServerError('Network unreachable. Is the Render server sleeping? Click below to wake it.');
+          }
+          if (attempts < maxRetries) {
+            showToast(`Server waking up... retrying (${attempts}/${maxRetries})`);
+            await new Promise(res => setTimeout(res, 3000));
+            continue;
+          }
+        } else if (err.message && (err.message.includes('500') || err.message.includes('Internal'))) {
+          setServerError('500 Internal Server Error — Tharun needs to check the database logs. Our payload is correct.');
+          showToast('Server-side error. The registration payload was sent correctly.');
+          break;
+        } else {
+          setServerError(err.message);
+          showToast(err.message || 'Registration failed.');
+          break;
+        }
+      }
     }
+    setIsLoading(false);
   };
 
   const inputStyle = {
@@ -84,61 +106,46 @@ export default function Register() {
        </div>
 
        <div style={{ flex: 1, overflowY: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4rem', position: 'relative' }}>
-          
+          {serverError && (
+             <div style={{ position: 'absolute', top: '10rem', right: '3rem', background: serverError.includes('500') ? '#f59e0b' : '#DC2626', color: '#fff', padding: '1.5rem', borderRadius: '12px', zIndex: 1000, boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)', maxWidth: '300px' }}>
+                <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ fontSize: '1.5rem' }}>{serverError.includes('500') ? '⚠️' : '🔴'}</span> {serverError.includes('500') ? 'Server-Side Error' : 'Connection Issue'}
+                </div>
+                <p style={{ fontSize: '0.85rem', marginBottom: '1rem', lineHeight: 1.5 }}>{serverError}</p>
+                <a href="https://interior-marketplace-api.onrender.com/docs" target="_blank" rel="noopener noreferrer" style={{ display: 'block', textAlign: 'center', background: '#fff', color: '#333', padding: '0.8rem', borderRadius: '6px', fontSize: '0.9rem', fontWeight: 800, textDecoration: 'none' }}>
+                   Check Server Status
+                </a>
+             </div>
+          )}
           <div style={{ position: 'absolute', top: '2rem', right: '3rem', zIndex: 10 }}>
              <button onClick={() => navigate('/')} className="ghost-button" style={{ fontSize: '1.5rem', cursor: 'pointer', border: 'none', background: 'transparent', color: '#111827' }}>✕</button>
           </div>
 
           <div style={{ width: '100%', maxWidth: '400px' }}>
-             <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '2.5rem', marginBottom: '0.5rem', letterSpacing: '-1px', color: '#111827', marginTop: '2rem' }}>Register Node</h2>
-             <p style={{ fontFamily: 'var(--font-body)', fontSize: '1rem', color: '#6b7280', marginBottom: '2.5rem' }}>Construct a new spatial authentication identity.</p>
+             <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '2.5rem', marginBottom: '0.5rem', letterSpacing: '-1px', color: '#111827', marginTop: '2rem' }}>Create Account</h2>
+             <p style={{ fontFamily: 'var(--font-body)', fontSize: '1rem', color: '#6b7280', marginBottom: '2.5rem' }}>Join thousands of shoppers. It's free.</p>
 
              <form onSubmit={handleSubmit}>
-                <div style={{ display: 'flex', gap: '1rem' }}>
-                   <div style={{ flex: 1 }}>
-                     <label style={labelStyle}>Full Name</label>
-                     <input required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} style={inputStyle} onFocus={(e) => { e.target.style.borderColor = 'var(--color-primary)'; e.target.style.boxShadow = '0 0 0 3px rgba(0,0,0,0.05)'; }} onBlur={(e) => { e.target.style.borderColor = '#d1d5db'; e.target.style.boxShadow = 'none'; }} />
-                   </div>
-                   <div style={{ flex: 1 }}>
-                     <label style={labelStyle}>Context Role</label>
-                     <select value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})} style={{ ...inputStyle, cursor: 'pointer' }}>
-                        <option value="customer">Customer Node</option>
-                        <option value="vendor">Vendor Node</option>
-                     </select>
-                   </div>
-                </div>
+                 <label style={labelStyle}>I am a</label>
+                 <select value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})} style={{ ...inputStyle, cursor: 'pointer', marginBottom: '1.5rem' }}>
+                    <option value="customer">Shopper</option>
+                    <option value="vendor">Seller</option>
+                 </select>
 
                 <label style={labelStyle}>Email Address</label>
                 <input type="email" required value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} style={inputStyle} onFocus={(e) => { e.target.style.borderColor = 'var(--color-primary)'; e.target.style.boxShadow = '0 0 0 3px rgba(0,0,0,0.05)'; }} onBlur={(e) => { e.target.style.borderColor = '#d1d5db'; e.target.style.boxShadow = 'none'; }} />
 
-                <label style={labelStyle}>Phone Number</label>
-                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-                   <input type="tel" required value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} style={{ ...inputStyle, marginBottom: 0 }} onFocus={(e) => { e.target.style.borderColor = 'var(--color-primary)'; e.target.style.boxShadow = '0 0 0 3px rgba(0,0,0,0.05)'; }} onBlur={(e) => { e.target.style.borderColor = '#d1d5db'; e.target.style.boxShadow = 'none'; }} />
-                   <button type="button" onClick={handleSendOTP} disabled={otpSent} style={{ whiteSpace: 'nowrap', padding: '0 1rem', background: 'transparent', border: '1px solid var(--color-primary)', color: 'var(--color-primary)', borderRadius: '4px', fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '0.8rem', cursor: 'pointer', opacity: otpSent ? 0.5 : 1 }}>
-                      {otpSent ? 'OTP Dispatch' : 'SEND OTP'}
-                   </button>
-                </div>
-
-                <AnimatePresence>
-                  {otpSent && (
-                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} style={{ overflow: 'hidden' }}>
-                      <label style={labelStyle}>6-Digit Verification Code</label>
-                      <input type="text" maxLength={6} required value={formData.otp} onChange={e => setFormData({...formData, otp: e.target.value})} style={inputStyle} placeholder="------" onFocus={(e) => { e.target.style.borderColor = 'var(--color-primary)'; e.target.style.boxShadow = '0 0 0 3px rgba(0,0,0,0.05)'; }} onBlur={(e) => { e.target.style.borderColor = '#d1d5db'; e.target.style.boxShadow = 'none'; }} />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
                 <label style={labelStyle}>Password</label>
                 <input type="password" required value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} style={inputStyle} onFocus={(e) => { e.target.style.borderColor = 'var(--color-primary)'; e.target.style.boxShadow = '0 0 0 3px rgba(0,0,0,0.05)'; }} onBlur={(e) => { e.target.style.borderColor = '#d1d5db'; e.target.style.boxShadow = 'none'; }} />
 
-                <motion.button variants={buttonTapVariants} whileHover="hover" whileTap="tap" type="submit" disabled={isLoading || (otpSent && formData.otp.length !== 6)} style={{ width: '100%', background: 'var(--color-primary)', color: '#fff', border: 'none', padding: '1rem', borderRadius: '4px', fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '1rem', cursor: isLoading || (otpSent && formData.otp.length !== 6) ? 'not-allowed' : 'pointer', marginTop: '0.5rem', marginBottom: '1.5rem', opacity: isLoading || (otpSent && formData.otp.length !== 6) ? 0.5 : 1 }}>
-                   {isLoading ? 'Synthesizing...' : 'Register Identity'}
+                <motion.button variants={buttonTapVariants} whileHover="hover" whileTap="tap" type="submit" disabled={isLoading} style={{ width: '100%', background: 'var(--color-primary)', color: '#fff', border: 'none', padding: '1rem', borderRadius: '4px', fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '1rem', cursor: isLoading ? 'not-allowed' : 'pointer', marginTop: '1.5rem', marginBottom: '1.5rem', opacity: isLoading ? 0.5 : 1 }}>
+                    {isLoading ? 'Creating your account...' : 'Create Account'}
                 </motion.button>
              </form>
 
              <div style={{ textAlign: 'center' }}>
-                <span style={{ fontSize: '0.9rem', color: '#6b7280' }}>Already structured in the directory? </span>
-                <Link to="/auth" style={{ color: 'var(--color-primary)', fontWeight: 600, textDecoration: 'none' }}>Sign In</Link>
+                 <span style={{ fontSize: '0.9rem', color: '#6b7280' }}>Already have an account? </span>
+                 <Link to="/auth" style={{ color: 'var(--color-primary)', fontWeight: 600, textDecoration: 'none' }}>Sign In</Link>
              </div>
           </div>
        </div>

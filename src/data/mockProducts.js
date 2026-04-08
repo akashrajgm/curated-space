@@ -2,10 +2,10 @@ export const mockProducts = [
   // CHAIRS (6 items)
   { id: 1, title: 'Minimalist Lounge Chair', description: 'Elegant seating crafted with sustainable wood and tailored linen.', price: 54000, category: 'Chairs', image: 'https://images.unsplash.com/photo-1592078615290-033ee584e267?auto=format&fit=crop&w=800&q=80' },
   { id: 2, title: 'Bouclé Armchair', description: 'Curved lines and textured bouclé fabric offer a tactile presence.', price: 68000, category: 'Chairs', image: 'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?auto=format&fit=crop&w=800&q=80' },
-  { id: 3, title: 'Onyx Leather Seat', description: 'A sleek, black leather profile resting on a thin steel wireframe.', price: 82000, category: 'Chairs', image: 'https://images.unsplash.com/photo-1581539250439-c96689b516cb?auto=format&fit=crop&w=800&q=80' },
+  { id: 3, title: 'Onyx Leather Seat', description: 'A sleek, black leather profile resting on a thin steel wireframe.', price: 82000, category: 'Chairs', image: 'https://images.unsplash.com/photo-1581539250439-c96689b516dd?auto=format&fit=crop&w=800&q=80' },
   { id: 4, title: 'Nordic Oak Dining Chair', description: 'Classic Scandinavian minimalism defining dining architectures.', price: 35000, category: 'Chairs', image: 'https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=800&q=80' },
   { id: 5, title: 'Textured Concrete Stool', description: 'A bold statement piece acting as both structural pillar and seat.', price: 18000, category: 'Chairs', image: 'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?auto=format&fit=crop&w=800&q=80' },
-  { id: 6, title: 'Bauhaus Canvas Recliner', description: 'Folding geometric shapes offering low-profile relaxation.', price: 45000, category: 'Chairs', image: 'https://images.unsplash.com/photo-1586105251261-72a7564d6034?auto=format&fit=crop&w=800&q=80' },
+  { id: 6, title: 'Bauhaus Canvas Recliner', description: 'Folding geometric shapes offering low-profile relaxation.', price: 45000, category: 'Chairs', image: 'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?auto=format&fit=crop&w=800&q=80' },
 
   // SOFAS (6 items)
   { id: 7, title: 'Modular Velvet Sofa', description: 'Deep, plush seating with a low profile for endless configurations.', price: 125000, category: 'Sofas', image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=800&q=80' },

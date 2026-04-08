@@ -1,4 +1,26 @@
-export const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://interior-marketplace-api.onrender.com';
+// ─── Proxy Bridge Protocol ────────────────────────────────────────────────────
+// In dev: /api/* → Vite proxy → https://interior-marketplace-api.onrender.com/*
+// In prod: direct to the Render URL (no proxy available)
+const isDev = typeof import.meta !== 'undefined' && import.meta.env?.DEV;
+export const API_BASE_URL = isDev ? '/api' : 'https://interior-marketplace-api.onrender.com';
+const DIRECT_BASE_URL = 'https://interior-marketplace-api.onrender.com';
+
+// ─── No-Prefix Endpoints ──────────────────────────────────────────────────────
+// These routes on Tharun's backend do NOT live under /api/* — they must bypass
+// the Vite proxy and hit the Render URL directly (even in dev mode).
+const DIRECT_ENDPOINTS = [
+  '/users/me',
+  '/vendors/profile',
+  '/orders',
+  '/wishlist',
+  '/cart',
+  '/register',
+  '/login',
+  '/token',
+];
+
+const isDirectEndpoint = (endpoint) =>
+  DIRECT_ENDPOINTS.some(path => endpoint === path || endpoint.startsWith(path + '/'));
 
 export const setAuthToken = (token) => {
   if (token) {
@@ -8,13 +30,29 @@ export const setAuthToken = (token) => {
   }
 };
 
-export const getAuthToken = () => {
-  return localStorage.getItem('jwt');
+export const getAuthToken = () => localStorage.getItem('jwt');
+
+// ─── Health Check / Wake-up Ping ──────────────────────────────────────────────
+export const wakeUpServer = async () => {
+  const healthUrl = `${DIRECT_BASE_URL}/`;
+  console.log('🟡 HEALTH PING →', healthUrl);
+  try {
+    const res = await fetch(healthUrl, { method: 'GET' });
+    console.log('🟢 SERVER AWAKE:', res.status);
+    return true;
+  } catch (err) {
+    console.error('🔴 HEALTH PING FAILED:', err.message);
+    return false;
+  }
 };
 
 export const apiClient = async (endpoint, options = {}) => {
-  const url = `${API_BASE_URL}${endpoint}`;
-  
+  const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+
+  // Route: direct endpoints bypass the proxy; everything else goes through /api
+  const base = isDev && !isDirectEndpoint(cleanEndpoint) ? API_BASE_URL : DIRECT_BASE_URL;
+  const finalUrl = `${base}${cleanEndpoint}`;
+
   const token = getAuthToken();
   const headers = {
     'Content-Type': 'application/json',
@@ -22,27 +60,39 @@ export const apiClient = async (endpoint, options = {}) => {
     ...(options.headers || {}),
   };
 
+  console.log(`🌐 ${options.method || 'GET'} ${finalUrl}`);
+
   try {
-    const response = await fetch(url, {
-      ...options,
-      headers,
-    });
-    
-    // Attempt to throw informative error if not ok
+    const response = await fetch(finalUrl, { ...options, headers });
+
     if (!response.ok) {
-        throw new Error(`API error: ${response.status} ${response.statusText}`);
+      let errorMessage = `API error: ${response.status} ${response.statusText}`;
+      try {
+        const errorBody = await response.json();
+        console.error(`Backend → ${response.status} ${cleanEndpoint}`, errorBody);
+        if (response.status === 401) {
+          console.warn('🔓 401 — removing expired JWT');
+          localStorage.removeItem('jwt');
+          errorMessage = `401 Not Authenticated: ${errorBody.detail || 'Token rejected by server.'}`;
+        } else if (response.status === 422 && Array.isArray(errorBody.detail)) {
+          const missingFields = errorBody.detail.map(err => err.loc.join('.')).join(', ');
+          errorMessage = `422 Missing Parameters: [${missingFields}]`;
+        } else {
+          errorMessage = errorBody.message || errorBody.detail || errorBody.error || errorMessage;
+        }
+      } catch (e) {}
+      throw new Error(errorMessage);
     }
 
-    // Attempt to parse JSON correctly
-    const contentType = response.headers.get("content-type");
-    if (contentType && contentType.indexOf("application/json") !== -1) {
-      const data = await response.json();
-      return data;
-    } else {
-      return await response.text();
-    }
+    const contentType = response.headers.get('content-type');
+    return contentType && contentType.includes('application/json')
+      ? await response.json()
+      : await response.text();
 
   } catch (error) {
+    if (error.message && error.message.includes('Failed to fetch')) {
+      console.error('🚨 Network failure:', finalUrl);
+    }
     throw error;
   }
 };

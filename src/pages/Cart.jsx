@@ -13,7 +13,7 @@ export default function Cart() {
     return (
       <motion.div className="cart-page empty" variants={pageVariants} initial="initial" animate="animate" exit="exit">
         <div className="cart-empty-state">
-          <h2>Your curated space is empty</h2>
+          <h2>Your cart is empty</h2>
           <p>Discover pieces that define modern living.</p>
           <Link to="/" className="primary-cta" style={{ display: 'inline-block', marginTop: '1.5rem', textDecoration: 'none' }}>
             Continue Shopping

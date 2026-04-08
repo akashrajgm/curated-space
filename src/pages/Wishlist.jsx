@@ -21,7 +21,7 @@ export default function Wishlist() {
 
   return (
     <motion.div className="wishlist-page" variants={pageVariants} initial="initial" animate="animate" exit="exit" style={{ padding: '2rem 0' }}>
-       <h1 className="page-title">Curated Tracking</h1>
+       <h1 className="page-title">My Wishlist</h1>
        
        <div className="products-grid">
          {wishlist.map(product => (
