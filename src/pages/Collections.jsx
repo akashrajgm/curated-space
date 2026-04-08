@@ -73,6 +73,7 @@ export default function Collections() {
           >
             {/* Image */}
             <motion.img
+              loading="lazy"
               src={cat.image}
               alt={cat.name}
               variants={{ hover: { scale: 1.06 } }}

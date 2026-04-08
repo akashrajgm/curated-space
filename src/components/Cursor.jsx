@@ -5,6 +5,7 @@ import { snapSound, clickSound } from '../utils/soundscape';
 export default function Cursor() {
   const [isHovered, setIsHovered] = useState(false);
   const [pulse, setPulse] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(true);
 
   // Directly mapping state for 0-latency tracking
   const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 });
@@ -17,7 +18,19 @@ export default function Cursor() {
   const smoothRingY = useSpring(ringY, { stiffness: 800, damping: 40, mass: 0.1 });
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window !== 'undefined') {
+      const checkDesktop = () => setIsDesktop(window.innerWidth >= 768 && window.matchMedia('(pointer: fine)').matches);
+      checkDesktop();
+      window.addEventListener('resize', checkDesktop);
+      return () => window.removeEventListener('resize', checkDesktop);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !isDesktop) {
+      document.body.style.cursor = 'auto';
+      return;
+    }
     let hoverTarget = null;
     let targetX = -100;
     let targetY = -100;
@@ -62,18 +75,26 @@ export default function Cursor() {
       cancelAnimationFrame(requestRef.current);
       document.body.style.cursor = 'auto';
     };
-  }, [ringX, ringY]);
+  }, [ringX, ringY, isDesktop]);
+
+  if (!isDesktop) return null;
 
   return (
     <>
        <style>
           {`
-             * { cursor: none !important; }
+             @media (pointer: fine) {
+                * { cursor: none !important; }
+             }
+             @media (pointer: coarse) {
+                .custom-cursor { display: none !important; }
+             }
           `}
        </style>
        
        {/* High Performance Primary Dot (0 Lag) */}
        <div
+         className="custom-cursor"
          style={{
            position: 'fixed',
            top: 0,
@@ -94,6 +115,7 @@ export default function Cursor() {
 
        {/* Secondary Difference Ring */}
        <motion.div
+         className="custom-cursor"
          style={{
            position: 'fixed',
            top: 0,

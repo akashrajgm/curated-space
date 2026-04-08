@@ -63,6 +63,7 @@ export default function InteriorDesign() {
             style={{ borderRadius: '14px', overflow: 'hidden', aspectRatio: '3/4', position: 'relative', cursor: 'pointer' }}
           >
             <motion.img
+              loading="lazy"
               src={item.url} alt={item.label}
               animate={{ scale: hoveredGallery === i ? 1.07 : 1 }}
               transition={{ duration: 0.4 }}

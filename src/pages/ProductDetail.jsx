@@ -62,7 +62,7 @@ export default function ProductDetail() {
        </button>
        <div className="pdp-grid">
          <motion.div className="pdp-image-container" layoutId={`product-frame-${product.id}`}>
-           <img src={product.image} alt={product.title} className="pdp-image" />
+           <img loading="lazy" src={product.image} alt={product.title} className="pdp-image" />
          </motion.div>
          <div className="pdp-content">
            <span className="pdp-category">{product.category}</span>

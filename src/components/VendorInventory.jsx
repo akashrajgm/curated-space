@@ -140,7 +140,7 @@ export default function VendorInventory() {
                      <motion.tr key={item.id} layout initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }} transition={{ duration: 0.3 }} style={{ borderBottom: '1px solid #eee', cursor: 'pointer' }} whileHover={{ backgroundColor: 'rgba(59,130,246,0.02)' }}>
                        <td style={{ padding: '1rem', color: '#888', fontSize: '0.85rem' }}>#{typeof item.id === 'string' ? item.id.slice(-6) : item.id}</td>
                        <td style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '1rem 0' }}>
-                          {item.image && <img src={item.image} alt="" style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.06)' }} />}
+                          {item.image && <img loading="lazy" src={item.image} alt="" style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.06)' }} />}
                           {item.title}
                           <span style={{ background: 'var(--color-primary)', color: '#fff', fontSize: '10px', padding: '3px 6px', borderRadius: '4px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', boxShadow: '0 0 10px rgba(59,130,246,0.4)' }}>LIVE</span>
                        </td>

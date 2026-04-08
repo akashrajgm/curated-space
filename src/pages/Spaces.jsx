@@ -62,17 +62,17 @@ function RoomSection({ room, index, navigate }) {
       </p>
 
       {/* Image bento grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: isEven ? '2fr 1fr' : '1fr 2fr', gridTemplateRows: '280px 200px', gap: '1rem', height: '500px' }}>
+      <div className={`bento-grid-spaces ${isEven ? 'even' : 'odd'}`}>
         {/* Large image */}
-        <div style={{ gridRow: '1 / 3', borderRadius: '16px', overflow: 'hidden' }}>
-          <img src={room.images[0]} alt={room.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <div className="bento-large-image" style={{ borderRadius: '16px', overflow: 'hidden' }}>
+          <img loading="lazy" src={room.images[0]} alt={room.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
         {/* Two stacked small images */}
-        <div style={{ borderRadius: '16px', overflow: 'hidden' }}>
-          <img src={room.images[1]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <div style={{ borderRadius: '16px', overflow: 'hidden', minHeight: '200px' }}>
+          <img loading="lazy" src={room.images[1]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
-        <div style={{ borderRadius: '16px', overflow: 'hidden' }}>
-          <img src={room.images[2]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <div style={{ borderRadius: '16px', overflow: 'hidden', minHeight: '200px' }}>
+          <img loading="lazy" src={room.images[2]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
       </div>
 

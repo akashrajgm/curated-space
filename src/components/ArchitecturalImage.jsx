@@ -22,6 +22,7 @@ export default function ArchitecturalImage({ src, alt, className, style }) {
          src={lowResSrc}
          alt=""
          aria-hidden="true"
+         loading="lazy"
          style={{
            width: '100%', height: '100%', objectFit: 'cover',
            filter: 'blur(20px)',
@@ -33,6 +34,7 @@ export default function ArchitecturalImage({ src, alt, className, style }) {
 
        {/* High-res image with direct onError fallback — no state flicker */}
        <motion.img
+          loading="lazy"
           src={highResSrc}
           alt={alt}
           onLoad={() => setIsLoaded(true)}

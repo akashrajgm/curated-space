@@ -90,7 +90,7 @@ export default function Hero3D() {
       </div>
       
       <div style={{ position: 'absolute', top: '50%', left: '0', transform: 'translateY(-50%)', zIndex: 10, pointerEvents: 'none', paddingLeft: '5vw' }}>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '6rem', color: 'var(--color-on-surface)', letterSpacing: '-3px', lineHeight: 1, margin: 0 }}>
+        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(3rem, 8vw, 6rem)', color: 'var(--color-on-surface)', letterSpacing: '-3px', lineHeight: 1, margin: 0 }}>
           {headline.split(' ').map((word, i) => (
              <span key={i} style={{ display: 'inline-block', overflow: 'hidden', marginRight: '1.5rem' }}>
                 <motion.span 
@@ -107,7 +107,7 @@ export default function Hero3D() {
            <motion.p 
               initial={{ y: '105%', opacity: 0 }} animate={{ y: 0, opacity: 1 }} 
               transition={{ duration: 1, delay: 0.6, ease: [0.76, 0, 0.24, 1] }}
-              style={{ fontFamily: 'var(--font-body)', fontSize: '1.5rem', color: 'var(--color-on-surface-variant)', fontWeight: 500 }}
+              style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(1.1rem, 3vw, 1.5rem)', color: 'var(--color-on-surface-variant)', fontWeight: 500 }}
            >
               {subhead}
            </motion.p>

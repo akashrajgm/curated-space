@@ -236,6 +236,7 @@ export default function ProductForge({ isOpen, onClose, onProductCreated }) {
                 {imagePreview ? (
                   <div style={{ position: 'relative', width: '100%' }}>
                     <img
+                      loading="lazy"
                       src={imagePreview}
                       alt="Preview"
                       style={{ width: '100%', height: '240px', objectFit: 'cover', borderRadius: '12px', display: 'block' }}
