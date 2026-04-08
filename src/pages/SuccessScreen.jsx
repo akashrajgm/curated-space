@@ -50,7 +50,7 @@ export default function SuccessScreen() {
             transition={{ delay: 1, duration: 1 }} 
             style={{ fontSize: '1.25rem', color: '#4b5563', marginTop: '1rem', marginBottom: '3rem', fontFamily: 'var(--font-body)', fontWeight: 500 }}
          >
-            Architectural space verified and deployed to your ledger.
+            Your order has been placed and is being prepared.
          </motion.p>
          
          <motion.button 
@@ -74,7 +74,7 @@ export default function SuccessScreen() {
             whileHover={{ scale: 1.05, background: 'rgba(255,255,255,1)' }}
             whileTap={{ scale: 0.95 }}
          >
-            Return to Matrix
+            Continue Shopping
          </motion.button>
       </div>
     </motion.div>

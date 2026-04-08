@@ -7,9 +7,10 @@ import { apiClient } from '../api/apiClient';
 import { useToast } from '../context/ToastContext';
 import { formatCurrency } from '../utils/currency';
 import { buttonTapVariants } from '../utils/motionVariants';
+import { sendOrderConfirmation } from '../utils/emailService';
 import '../styles/pages.css';
 
-const STAGES = ['Verifying identity...', 'Establishing secure socket...', 'Transmitting order...', 'Confirmed.'];
+const STAGES = ['Verifying your details...', 'Securing your order...', 'Placing your order...', 'Order confirmed!'];
 
 export default function Checkout() {
   const { cartItems, cartTotal, clearCart } = useCart();
@@ -64,6 +65,14 @@ export default function Checkout() {
         body: JSON.stringify(payload),
       });
 
+      // Trigger mock email confirmation
+      sendOrderConfirmation({
+        name: formData.firstName || user?.name || 'Valued Customer',
+        email: formData.email || user?.email || '',
+        items: cartItems,
+        total: formatCurrency(cartTotal),
+      });
+
       // Wait for animation to finish before navigating
       await stagePromise;
 
@@ -71,8 +80,13 @@ export default function Checkout() {
       navigate('/checkout/success');
     } catch (err) {
       console.error('Order placement failed:', err.message);
-      // Even if backend fails, show success for now (demo mode)
-      // Backend may not have /orders endpoint yet
+      // Trigger mock email even on backend error (demo mode)
+      sendOrderConfirmation({
+        name: formData.firstName || user?.name || 'Valued Customer',
+        email: formData.email || user?.email || '',
+        items: cartItems,
+        total: formatCurrency(cartTotal),
+      });
       await stagePromise;
       clearCart();
       navigate('/checkout/success');
