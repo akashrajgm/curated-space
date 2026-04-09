@@ -634,16 +634,18 @@
 
 /* Step 109: Emergency Mobile Optimization & Responsiveness Fix */
 @media (max-width: 768px) {
-  /* 2. Image Ghosting Fix */
+  /* Step 117: Advanced Image Scaling & Aspect-Ratio Fix */
   img, .pdp-image-container img {
-    aspect-ratio: 4 / 5;
-    background-color: #f9fafb; /* bg-gray-50 */
-    object-fit: contain !important;
+    height: auto !important;
     width: 100% !important;
+    object-position: center !important;
+    object-fit: contain !important;
   }
-  
-  .product-image-container {
-    background-color: #f9fafb !important;
+
+  .product-image-container, .pdp-image-container {
+    background-color: #ffffff !important;
+    padding: 1.5rem !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
   }
 
   /* 3. Hero Layout fixes for mobile */

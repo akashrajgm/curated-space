@@ -157,6 +157,8 @@ export default function Storefront() {
               filteredProducts.slice(0, visibleCount).map((product, i) => {
                 const existingItem = (cartItems || []).find(item => item.product_id === product.id || item.id === product.id);
                 const inWishlist = (wishlist || []).some(item => item.id === product.id || item.product_id === product.id);
+                const isWideItem = product?.category === 'Sofas' || product?.category === 'Benches';
+                
                 return (
                   <motion.div
                     key={product.id}
@@ -174,7 +176,7 @@ export default function Storefront() {
                         src={product?.image}
                         alt={product?.title || 'Product'}
                         className="product-image-container"
-                        style={{ background: 'transparent' }}
+                        style={{ background: 'transparent', aspectRatio: isWideItem ? '16/9' : '4/5' }}
                         priority={i < 4}
                       />
                       <button

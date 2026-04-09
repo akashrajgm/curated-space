@@ -91,6 +91,7 @@ export default function ProductDetail() {
   };
 
   const existingItem = (cartItems || []).find(item => item.product_id === product.id || item.id === product.id);
+  const isWideItem = product?.category === 'Sofas' || product?.category === 'Benches';
 
   return (
     <motion.div className="pdp-page" variants={pageVariants} initial="initial" animate="animate" exit="exit">
@@ -98,7 +99,7 @@ export default function ProductDetail() {
           &larr; Back to Catalog
        </button>
        <div className="pdp-grid">
-         <motion.div className="pdp-image-container" layoutId={`product-frame-${product?.id}`}>
+         <motion.div className="pdp-image-container" layoutId={`product-frame-${product?.id}`} style={{ aspectRatio: isWideItem ? '16/9' : '4/5' }}>
            <img loading="eager" src={product?.image || 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&q=80&w=800'} alt={product?.title || 'Product'} className="pdp-image" />
          </motion.div>
          <div className="pdp-info">
