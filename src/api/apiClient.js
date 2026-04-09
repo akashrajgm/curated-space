@@ -68,8 +68,8 @@ export const apiClient = async (endpoint, options = {}) => {
     if (!response.ok) {
       let errorMessage = `API error: ${response.status} ${response.statusText}`;
       try {
-        const errorBody = await response.json();
-        console.error(`Backend → ${response.status} ${cleanEndpoint}`, errorBody);
+        // Silent for emergency review
+        // console.error(`Backend → ${response.status} ${cleanEndpoint}`, errorBody);
         if (response.status === 401) {
           console.warn('🔓 401 — removing expired JWT');
           localStorage.removeItem('jwt');

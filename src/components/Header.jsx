@@ -167,31 +167,31 @@ export default function Header() {
             ></motion.div>
             <motion.div 
                initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }} transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-               style={{ position: 'fixed', top: 0, bottom: 0, left: 0, width: '280px', background: 'var(--color-surface-container-lowest)', zIndex: 1000, padding: '2rem', display: 'flex', flexDirection: 'column', gap: '2rem', overflowY: 'auto' }}
+               style={{ position: 'fixed', top: 0, bottom: 0, left: 0, width: '80vw', background: 'var(--color-surface-container-lowest)', zIndex: 1000, padding: '2rem', display: 'flex', flexDirection: 'column', gap: '2rem', overflowY: 'auto' }}
             >
                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                  <h2 className="logo" style={{ fontSize: '1.25rem', margin: 0 }}>CuratedSpace</h2>
                  <button className="ghost-button" onClick={closeMenus} style={{ padding: '0.5rem' }}>✕</button>
                </div>
                
-               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                 <Link to="/" className="nav-link" onClick={closeMenus}>Home</Link>
-                 <Link to="/collections" className="nav-link" onClick={closeMenus}>Categories</Link>
+               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                 <Link to="/" className="nav-link" onClick={closeMenus} style={{ padding: '1rem 0', display: 'block' }}>Home</Link>
+                 <Link to="/collections" className="nav-link" onClick={closeMenus} style={{ padding: '1rem 0', display: 'block' }}>Categories</Link>
                  {/* Design Services link hidden on mobile as per Step 109 */}
-                 <Link to="/spaces" className="nav-link" onClick={closeMenus}>Inspiration</Link>
-                 <Link to="/journal" className="nav-link" onClick={closeMenus}>Blog</Link>
-                 {user && String(user?.role).toLowerCase() === 'vendor' && <Link to="/vendor/dashboard" className="nav-link" onClick={closeMenus} style={{ color: 'var(--color-primary)', fontWeight: 600 }}>Seller Dashboard</Link>}
+                 <Link to="/spaces" className="nav-link" onClick={closeMenus} style={{ padding: '1rem 0', display: 'block' }}>Inspiration</Link>
+                 <Link to="/journal" className="nav-link" onClick={closeMenus} style={{ padding: '1rem 0', display: 'block' }}>Blog</Link>
+                 {user && String(user?.role).toLowerCase() === 'vendor' && <Link to="/vendor/dashboard" className="nav-link" onClick={closeMenus} style={{ padding: '1rem 0', display: 'block', color: 'var(--color-primary)', fontWeight: 600 }}>Seller Dashboard</Link>}
                </div>
                
                <div style={{ height: '1px', background: 'var(--color-surface-variant)' }}></div>
                
                {user ? (
-                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                     <p style={{ fontWeight: 600, fontFamily: 'var(--font-body)', fontSize: '0.9rem', color: 'var(--color-on-surface-variant)' }}>My Core Space</p>
-                    <Link to="/profile" className="nav-link" onClick={closeMenus}>Account Overview</Link>
-                    <Link to="/orders" className="nav-link" onClick={closeMenus}>My Orders</Link>
-                    <Link to="/wishlist" className="nav-link" onClick={closeMenus}>Wishlist</Link>
-                    <button className="nav-link" onClick={handleLogout} style={{ textAlign: 'left', color: 'var(--color-error)', border: 'none', background: 'transparent', padding: 0 }}>Sign Out</button>
+                    <Link to="/profile" className="nav-link" onClick={closeMenus} style={{ padding: '1rem 0', display: 'block' }}>Account Overview</Link>
+                    <Link to="/orders" className="nav-link" onClick={closeMenus} style={{ padding: '1rem 0', display: 'block' }}>My Orders</Link>
+                    <Link to="/wishlist" className="nav-link" onClick={closeMenus} style={{ padding: '1rem 0', display: 'block' }}>Wishlist</Link>
+                    <button className="nav-link" onClick={handleLogout} style={{ padding: '1rem 0', display: 'block', textAlign: 'left', color: 'var(--color-error)', border: 'none', background: 'transparent' }}>Sign Out</button>
                  </div>
                ) : (
                  <Link to="/auth" onClick={closeMenus}><button className="primary-cta" style={{ width: '100%' }}>Sign In to Network</button></Link>

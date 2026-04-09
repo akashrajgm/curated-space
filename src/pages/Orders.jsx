@@ -13,23 +13,39 @@ export default function Orders() {
     <motion.div className="orders-page" variants={pageVariants} initial="initial" animate="animate" exit="exit" style={{ padding: '2rem 0' }}>
       <h1 className="page-title">My Architectures</h1>
       <div className="dashboard-card" style={{ padding: '1rem', overflowX: 'auto' }}>
-         <table className="inventory-table" style={{ width: '100%' }}>
-            <thead>
-               <tr><th>Order Context ID</th><th>Date Initiated</th><th>Logistics Status</th><th style={{ textAlign: 'right' }}>Total Transacted</th></tr>
-            </thead>
-            <tbody>
+         <>
+           <table className="inventory-table" style={{ width: '100%' }}>
+              <thead>
+                 <tr><th>Order Context ID</th><th>Date Initiated</th><th>Logistics Status</th><th style={{ textAlign: 'right' }}>Total Transacted</th></tr>
+              </thead>
+              <tbody>
+                {orders.map(o => (
+                   <tr key={o.id}>
+                      <td className="item-title" style={{ padding: '1.5rem 1rem' }}>{o.id}</td>
+                      <td style={{ padding: '1.5rem 1rem' }}>{o.date}</td>
+                      <td style={{ padding: '1.5rem 1rem' }}>
+                         <span style={{ padding: '0.5rem 1rem', background: o.status === 'Delivered' ? 'var(--color-surface-container-low)' : 'rgba(25, 27, 35, 0.05)', borderRadius: 'var(--radius-xl)', fontSize: '0.85rem', fontWeight: 600 }}>{o.status}</span>
+                      </td>
+                      <td style={{ fontWeight: 600, textAlign: 'right', padding: '1.5rem 1rem' }}>{formatCurrency(o.total)}</td>
+                   </tr>
+                ))}
+              </tbody>
+           </table>
+           <div className="mobile-card-view">
               {orders.map(o => (
-                 <tr key={o.id}>
-                    <td className="item-title" style={{ padding: '1.5rem 1rem' }}>{o.id}</td>
-                    <td style={{ padding: '1.5rem 1rem' }}>{o.date}</td>
-                    <td style={{ padding: '1.5rem 1rem' }}>
-                       <span style={{ padding: '0.5rem 1rem', background: o.status === 'Delivered' ? 'var(--color-surface-container-low)' : 'rgba(25, 27, 35, 0.05)', borderRadius: 'var(--radius-xl)', fontSize: '0.85rem', fontWeight: 600 }}>{o.status}</span>
-                    </td>
-                    <td style={{ fontWeight: 600, textAlign: 'right', padding: '1.5rem 1rem' }}>{formatCurrency(o.total)}</td>
-                 </tr>
+                <div key={`mob-${o.id}`} style={{ padding: '1.5rem', border: '1px solid var(--color-outline-variant)', borderRadius: 'var(--radius-lg)', display: 'flex', flexDirection: 'column', gap: '0.75rem', background: 'var(--color-surface-container-lowest)' }}>
+                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span className="item-title" style={{ fontSize: '1.1rem' }}>{o.id}</span>
+                      <span style={{ padding: '0.3rem 0.8rem', background: o.status === 'Delivered' ? 'var(--color-surface-container-low)' : 'rgba(25, 27, 35, 0.05)', borderRadius: 'var(--radius-xl)', fontSize: '0.8rem', fontWeight: 600 }}>{o.status}</span>
+                   </div>
+                   <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--color-on-surface-variant)', fontSize: '0.9rem' }}>
+                      <span>{o.date}</span>
+                      <span style={{ fontWeight: 700, color: 'var(--color-on-surface)' }}>{formatCurrency(o.total)}</span>
+                   </div>
+                </div>
               ))}
-            </tbody>
-         </table>
+           </div>
+         </>
       </div>
     </motion.div>
   );

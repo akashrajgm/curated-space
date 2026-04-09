@@ -680,4 +680,42 @@
   .product-card {
     width: 100% !important;
   }
+
+  /* 4. Tables-to-Cards Conversion */
+  table.inventory-table, table.standard-table, .inventory-table-container table {
+    display: none !important;
+  }
+  .mobile-card-view {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem;
+  }
+
+  /* Auth Layout Fixes for Mobile */
+  .auth-layout {
+    flex-direction: column !important;
+    position: relative !important;
+    overflow-y: auto !important;
+  }
+  .auth-panel-blue {
+    display: none !important;
+  }
+  .auth-panel-form {
+    padding: 2rem 1rem !important;
+    align-items: flex-start !important;
+    overflow-y: visible !important;
+  }
+
+  .hero-canvas-wrapper {
+    position: relative !important;
+    height: 50vh !important;
+    order: 2 !important;
+    pointer-events: none !important; /* Step 112: Disable clicks passing through 3D canvas on mobile */
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-card-view {
+    display: none !important;
+  }
 }

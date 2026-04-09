@@ -129,7 +129,11 @@ html {
     display: none !important;
   }
   .hamburger {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
   }
   .auth-button-desktop {
     display: none !important;

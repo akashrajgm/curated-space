@@ -132,29 +132,49 @@ export default function VendorInventory() {
         </h2>
         <div className="inventory-table-container">
           {isLoading ? <p>Synchronizing Real-Time Matrix...</p> : (
-            <table className="inventory-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead><tr style={{ borderBottom: '2px solid #ddd', textAlign: 'left' }}><th style={{ padding: '1rem' }}>Index</th><th>Title</th><th>Category</th><th>Valuation</th><th style={{ textAlign: 'right', padding: '1rem' }}>Actions</th></tr></thead>
-              <tbody>
-                <AnimatePresence>
-                   {inventory.length === 0 ? <motion.tr><td colSpan="5" style={{ textAlign: 'center', padding: '2rem' }}>No catalog active. Open the Product Forge to begin.</td></motion.tr> : inventory.map(item => (
-                     <motion.tr key={item.id} layout initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }} transition={{ duration: 0.3 }} style={{ borderBottom: '1px solid #eee', cursor: 'pointer' }} whileHover={{ backgroundColor: 'rgba(59,130,246,0.02)' }}>
-                       <td style={{ padding: '1rem', color: '#888', fontSize: '0.85rem' }}>#{typeof item.id === 'string' ? item.id.slice(-6) : item.id}</td>
-                       <td style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '1rem 0' }}>
-                          {item.image && <img loading="lazy" src={item.image} alt="" style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.06)' }} />}
-                          {item.title}
-                          <span style={{ background: 'var(--color-primary)', color: '#fff', fontSize: '10px', padding: '3px 6px', borderRadius: '4px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', boxShadow: '0 0 10px rgba(59,130,246,0.4)' }}>LIVE</span>
-                       </td>
-                       <td style={{ color: '#555' }}>{item.category || "Decor"}</td>
-                       <td style={{ fontWeight: 600 }}>{formatCurrency(item.price)}</td>
-                       <td style={{ textAlign: 'right', padding: '1rem' }}>
-                          <button onClick={() => setEditingProduct(item)} className="ghost-button" style={{ color: 'var(--color-primary)', border: '1px solid var(--color-primary)', padding: '0.4rem 0.8rem', borderRadius: 'var(--radius-md)', marginRight: '0.5rem' }}>Modify</button>
-                          <button onClick={() => handleDelete(item.id)} className="ghost-button" style={{ color: 'var(--color-error)', border: '1px solid rgba(255,100,100,0.3)', padding: '0.4rem 0.8rem', borderRadius: 'var(--radius-md)' }}>Purge</button>
-                       </td>
-                     </motion.tr>
-                   ))}
-                </AnimatePresence>
-              </tbody>
-            </table>
+            <>
+              <table className="inventory-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead><tr style={{ borderBottom: '2px solid #ddd', textAlign: 'left' }}><th style={{ padding: '1rem' }}>Index</th><th>Title</th><th>Category</th><th>Valuation</th><th style={{ textAlign: 'right', padding: '1rem' }}>Actions</th></tr></thead>
+                <tbody>
+                  <AnimatePresence>
+                     {inventory.length === 0 ? <motion.tr><td colSpan="5" style={{ textAlign: 'center', padding: '2rem' }}>No catalog active. Open the Product Forge to begin.</td></motion.tr> : inventory.map(item => (
+                       <motion.tr key={item.id} layout initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }} transition={{ duration: 0.3 }} style={{ borderBottom: '1px solid #eee', cursor: 'pointer' }} whileHover={{ backgroundColor: 'rgba(59,130,246,0.02)' }}>
+                         <td style={{ padding: '1rem', color: '#888', fontSize: '0.85rem' }}>#{typeof item.id === 'string' ? item.id.slice(-6) : item.id}</td>
+                         <td style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '1rem 0' }}>
+                            {item.image && <img loading="lazy" src={item.image} alt="" style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.06)' }} />}
+                            {item.title}
+                            <span style={{ background: 'var(--color-primary)', color: '#fff', fontSize: '10px', padding: '3px 6px', borderRadius: '4px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', boxShadow: '0 0 10px rgba(59,130,246,0.4)' }}>LIVE</span>
+                         </td>
+                         <td style={{ color: '#555' }}>{item.category || "Decor"}</td>
+                         <td style={{ fontWeight: 600 }}>{formatCurrency(item.price)}</td>
+                         <td style={{ textAlign: 'right', padding: '1rem' }}>
+                            <button onClick={() => setEditingProduct(item)} className="ghost-button" style={{ color: 'var(--color-primary)', border: '1px solid var(--color-primary)', padding: '0.4rem 0.8rem', borderRadius: 'var(--radius-md)', marginRight: '0.5rem' }}>Modify</button>
+                            <button onClick={() => handleDelete(item.id)} className="ghost-button" style={{ color: 'var(--color-error)', border: '1px solid rgba(255,100,100,0.3)', padding: '0.4rem 0.8rem', borderRadius: 'var(--radius-md)' }}>Purge</button>
+                         </td>
+                       </motion.tr>
+                     ))}
+                  </AnimatePresence>
+                </tbody>
+              </table>
+              <div className="mobile-card-view">
+                 {inventory.length === 0 ? <p style={{ padding: '1rem', textAlign: 'center' }}>No catalog active.</p> : inventory.map(item => (
+                   <div key={`mob-${item.id}`} style={{ padding: '1rem', border: '1px solid var(--color-outline-variant)', borderRadius: 'var(--radius-lg)', display: 'flex', flexDirection: 'column', gap: '0.75rem', background: 'var(--color-surface-container-lowest)' }}>
+                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                       {item.image && <img loading="lazy" src={item.image} alt="" style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '8px' }} />}
+                       <div style={{ flex: 1 }}>
+                         <h3 style={{ fontSize: '1.1rem', margin: '0 0 0.25rem 0' }}>{item.title}</h3>
+                         <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--color-on-surface-variant)' }}>{item.category || "Decor"} · #{typeof item.id === 'string' ? item.id.slice(-6) : item.id}</p>
+                       </div>
+                       <span style={{ fontWeight: 700, color: 'var(--color-primary)' }}>{formatCurrency(item.price)}</span>
+                     </div>
+                     <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                       <button onClick={() => setEditingProduct(item)} className="primary-cta" style={{ flex: 1, padding: '0.5rem', fontSize: '0.9rem' }}>Modify</button>
+                       <button onClick={() => handleDelete(item.id)} className="ghost-button" style={{ flex: 1, padding: '0.5rem', fontSize: '0.9rem', color: 'var(--color-error)', border: '1px solid rgba(255,100,100,0.3)' }}>Purge</button>
+                     </div>
+                   </div>
+                 ))}
+              </div>
+            </>
           )}
         </div>
       </div>
