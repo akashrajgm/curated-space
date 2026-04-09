@@ -57,24 +57,21 @@ export default function Journal() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.7, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+            className="blog-card"
             style={{
-              display: 'grid',
-              gridTemplateColumns: i % 2 === 0 ? '1.3fr 1fr' : '1fr 1.3fr',
-              gap: '4rem',
-              alignItems: 'center',
               cursor: 'pointer',
+              '--grid-cols': i % 2 === 0 ? '1.3fr 1fr' : '1fr 1.3fr',
+              '--image-order': i % 2 !== 0 ? 2 : 1,
+              '--text-order': i % 2 !== 0 ? 1 : 2
             }}
           >
-            {/* Image — swap order on odd articles */}
-            {i % 2 !== 0 && (
-              <div style={{ order: 2 }} />
-            )}
-            <div style={{
+            {/* Image */}
+            <div className="blog-card-image" style={{
               aspectRatio: '16/10',
               borderRadius: '20px',
               overflow: 'hidden',
               boxShadow: '0 20px 50px rgba(0,0,0,0.08)',
-              order: i % 2 !== 0 ? 2 : 1,
+              order: 'var(--image-order)',
               minHeight: '280px',
               background: '#f1f5f9',
             }}>
@@ -88,7 +85,7 @@ export default function Journal() {
             </div>
 
             {/* Text content */}
-            <div style={{ order: i % 2 !== 0 ? 1 : 2 }}>
+            <div className="blog-card-text" style={{ order: 'var(--text-order)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.25rem' }}>
                 <span style={{
                   padding: '0.3rem 0.75rem',

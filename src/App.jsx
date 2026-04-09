@@ -57,8 +57,8 @@ function AnimatedRoutes() {
           <Route path="/journal" element={<Journal />} />
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/orders" element={<Orders />} />
-          <Route path="/profile" element={<Storefront />} />
-          <Route path="/settings" element={<Storefront />} />
+          <Route path="/profile" element={<Navigate to="/account/overview" replace />} />
+          <Route path="/settings" element={<Navigate to="/account/settings" replace />} />
           <Route path="/auth" element={<AuthLanding />} />
           <Route path="/register" element={<Register />} />
           <Route path="/product/:id" element={<ProductDetail />} />

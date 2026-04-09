@@ -712,6 +712,38 @@
     order: 2 !important;
     pointer-events: none !important; /* Step 112: Disable clicks passing through 3D canvas on mobile */
   }
+
+  /* Step 114: Blog Page Layout Fix */
+  .blog-card {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+  .blog-card-image {
+    order: 1 !important;
+    width: 100% !important;
+  }
+  .blog-card-text {
+    order: 2 !important;
+  }
+
+  /* Step 114: Cart Clipping Fix */
+  .cart-item-card {
+    display: grid !important;
+    grid-template-columns: 100px 1fr !important;
+    gap: 1rem !important;
+    align-items: start !important;
+  }
+  .cart-item-thumb {
+    margin-right: 0 !important;
+  }
+  .cart-item-actions {
+    grid-column: 2;
+    justify-content: flex-start !important;
+    margin-top: 0.5rem;
+  }
+  .cart-summary {
+    padding: 2rem 1.5rem !important;
+  }
 }
 
 @media (min-width: 769px) {
