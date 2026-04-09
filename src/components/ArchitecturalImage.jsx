@@ -16,7 +16,7 @@ export default function ArchitecturalImage({ src, alt, className, style, priorit
   }
 
   return (
-    <div className={className} style={{ position: 'relative', overflow: 'hidden', backgroundColor: 'var(--color-surface-dim)', ...style }}>
+    <div className={className} style={{ position: 'relative', overflow: 'hidden', backgroundColor: '#f9fafb', ...style }}>
        {/* Blurred low-res placeholder shown while high-res loads */}
        <img
          src={lowResSrc}
@@ -24,7 +24,7 @@ export default function ArchitecturalImage({ src, alt, className, style, priorit
          aria-hidden="true"
          loading={priority ? "eager" : "lazy"}
          style={{
-           width: '100%', height: '100%', objectFit: 'cover',
+           width: '100%', height: '100%', objectFit: 'contain',
            filter: 'blur(20px)',
            transform: 'scale(1.1)',
            position: 'absolute', inset: 0,
@@ -43,7 +43,7 @@ export default function ArchitecturalImage({ src, alt, className, style, priorit
           animate={{ opacity: isLoaded ? 1 : 0 }}
           transition={{ duration: 1.2, ease: 'easeOut' }}
           style={{
-            width: '100%', height: '100%', objectFit: 'cover',
+            width: '100%', height: '100%', objectFit: 'contain',
             position: 'relative', zIndex: 1
           }}
        />
