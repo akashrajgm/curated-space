@@ -298,7 +298,7 @@ export default function SavedSettings() {
                   name="address"
                   value={profile.address || ''}
                   onChange={handleChange}
-                  placeholder="e.g. 42 Elm Street, New York, NY 10001"
+                  placeholder="e.g. H.No 12-3, Jubilee Hills, Hyderabad 500033"
                 />
               </FieldGroup>
             </SectionCard>

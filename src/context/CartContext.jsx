@@ -110,11 +110,26 @@ export const CartProvider = ({ children }) => {
           : item
       )
     );
-    // Optional: fire a PATCH if your backend supports it
-    // await apiClient(`/cart/${productId}`, { method: 'PATCH', body: JSON.stringify({ quantity: newQty }) });
+    // Fire a PUT/PATCH to sync with the backend
+    if (user) {
+      try {
+        await apiClient(`/cart/${productId}`, { method: 'PUT', body: JSON.stringify({ quantity: newQty }) });
+      } catch (err) {
+        console.error('Failed to update cart quantity on server:', err.message);
+      }
+    }
   };
 
-  const clearCart = () => setCartItems([]);
+  const clearCart = async () => {
+    setCartItems([]);
+    if (user) {
+      try {
+        await apiClient('/cart', { method: 'DELETE' });
+      } catch (err) {
+        console.error('Failed to clear cart on server:', err.message);
+      }
+    }
+  };
 
   const cartTotal = useMemo(() => {
     return cartItems.reduce((total, item) => {

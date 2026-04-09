@@ -194,7 +194,7 @@ export default function Checkout() {
 
           <div className="form-group" style={{ marginBottom: '1.5rem' }}>
             <label style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px' }}>Delivery Address</label>
-            <input type="text" id="address" value={formData.address} onChange={handleInputChange} required placeholder="e.g. 42 Elm Street, New York, NY 10001" style={{ width: '100%', padding: '1rem', border: '1px solid var(--color-outline-variant)', borderRadius: '4px', background: 'transparent', color: 'var(--color-on-surface)' }} />
+            <input type="text" id="address" value={formData.address} onChange={handleInputChange} required placeholder="e.g. H.No 12-3, Jubilee Hills, Hyderabad 500033" style={{ width: '100%', padding: '1rem', border: '1px solid var(--color-outline-variant)', borderRadius: '4px', background: 'transparent', color: 'var(--color-on-surface)' }} />
           </div>
 
           {/* Cart summary */}

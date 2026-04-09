@@ -29,16 +29,16 @@ export default function MyOrders() {
       setLoading(true);
       setError(null);
 
-      // STEP 115: Precision Mock orders fallback
+      // STEP 116: Fallback for 10s timeout
       fallbackTimeout = setTimeout(() => {
         if (isMounted) {
-          console.warn("⚠️ 5-second orders timeout hit. Using mock orders.");
+          console.warn("⚠️ 10-second orders timeout hit. Using mock orders.");
           setOrders([
-            { id: 'ORD-998877', status: 'Processing', total: 499, created_at: new Date().toISOString(), address: '123 Luxury Ave, CA', items: [{ name: 'Velvet Sofa', quantity: 1, price: 499 }] }
+            { id: 'ORD-998877', status: 'Processing', total: 49900, created_at: new Date().toISOString(), address: 'H.No 12-3, Jubilee Hills, Hyderabad 500033', items: [{ name: 'Velvet Sofa', quantity: 1, price: 49900 }] }
           ]);
           setLoading(false);
         }
-      }, 5000);
+      }, 10000);
 
       try {
         const data = await apiClient('/orders');
@@ -69,10 +69,15 @@ export default function MyOrders() {
         clearTimeout(fallbackTimeout);
         console.error('❌ Failed to fetch orders:', err.message);
         
-        // Mock Fallback override on literal crash to keep UI active
-        setOrders([
-           { id: 'ORD-998877', status: 'Processing', total: 499, created_at: new Date().toISOString(), address: '123 Luxury Ave, CA', items: [{ name: 'Velvet Sofa', quantity: 1, price: 499 }] }
-        ]);
+        if (err.message && err.message.includes('404')) {
+          console.warn('⚠️ 404 hit. Using Mock orders.');
+          setOrders([
+             { id: 'ORD-998877', status: 'Processing', total: 49900, created_at: new Date().toISOString(), address: 'H.No 12-3, Jubilee Hills, Hyderabad 500033', items: [{ name: 'Velvet Sofa', quantity: 1, price: 49900 }] }
+          ]);
+        } else {
+          setOrders([]);
+          setError(err.message);
+        }
       } finally {
         if (isMounted) setLoading(false);
       }
